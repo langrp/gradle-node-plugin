@@ -1,0 +1,7 @@
+
+include 'sample-app'
+
+includeBuild '..'
+
+rootProject.name = 'node-examples'
+		

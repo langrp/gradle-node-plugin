@@ -1,0 +1,3 @@
+moduleName=Test extension
+moduleVersion=1.0.0
+extensionClasses=com.palawan.gradle.GroovySupport

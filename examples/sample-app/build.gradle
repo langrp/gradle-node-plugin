@@ -1,0 +1,64 @@
+
+plugins {
+	id 'com.palawanframe.node'
+}
+
+node {
+	download = false
+	workingDir = rootProject.file( '.gradle/nodejs' )
+//	npm {
+//		workingDir = rootProject.file(".gradle/npm")
+//	}
+//	cnpm {
+//		workingDir = rootProject.file(".gradle/cnpm")
+//	}
+//	pnpm {
+//		workingDir = rootProject.file(".gradle/pnpm")
+//	}
+//	yarn {
+//		workingDir = rootProject.file(".gradle/yarn")
+//	}
+//	custom {
+//		command = "pnpm"
+//		workingDir = rootProject.file(".gradle/pnpm")
+//		npmPackage = "pnpm"
+//		inputFiles = ["package.json", "pnpm-lock.yaml"]
+//		outputFiles = ["pnpm-lock.yaml"]
+//		outputDirectories = ["node_modules"]
+//		cli {
+//			command = "pnpx"
+//		}
+//	}
+}
+
+nodeInstall {
+	command = "install"
+}
+
+task nodeVersion(type: NodeTask) {
+	args = ["--version"]
+}
+
+task npmVersion(type: NpmTask) {
+	command = "-version"
+}
+
+task npxVersion(type: NpxTask) {
+	command = "-version"
+}
+
+//task yarnVersion(type: YarnTask) {
+//	command = "-version"
+//}
+
+//task pnpmVersion(type: PnpmTask) {
+//	command = "--version"
+//}
+
+//task cnpmVersion(type: CnpmTask) {
+//	command = "--version"
+//}
+
+//task customVersion(type: CustomTask) {
+//	command = "--version"
+//}

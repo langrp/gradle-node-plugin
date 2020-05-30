@@ -84,10 +84,10 @@ val jacocoTestCoverageVerification = project.tasks.named<JacocoCoverageVerificat
 
 // Tasks order
 project.tasks.named("test") {
-	finalizedBy(jacocoTestReport)
+	finalizedBy(functionalTest)
 }
 
 project.tasks.named("check") {
-	dependsOn(functionalTest)
+	dependsOn(jacocoTestReport)
 	dependsOn(jacocoTestCoverageVerification)
 }

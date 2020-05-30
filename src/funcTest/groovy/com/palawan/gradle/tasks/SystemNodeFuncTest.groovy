@@ -27,10 +27,15 @@ package com.palawan.gradle.tasks
 
 import com.palawan.gradle.AbstractFuncTest
 import com.palawan.gradle.NodePlugin
+import org.gradle.internal.impldep.org.apache.tools.tar.TarInputStream
+import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
 import spock.lang.Stepwise
 
 import java.nio.file.Files
+import java.nio.file.Path
+import java.util.zip.GZIPInputStream
+import java.util.zip.ZipInputStream
 
 /**
  *
@@ -46,6 +51,20 @@ import java.nio.file.Files
  */
 @Stepwise
 class SystemNodeFuncTest extends AbstractFuncTest {
+
+	static Path nodeJsDir
+
+	def setupSpec() {
+		nodeJsDir = Files.createTempDirectory("junit-nodejs")
+		nodeJsDir = downloadNode("v${NodePlugin.LTS_VERSION}")
+		defineExecutable()
+	}
+
+	def cleanupSpec() {
+		if (nodeJsDir != null) {
+			nodeJsDir.toFile().deleteDir()
+		}
+	}
 
 	def "No setup tasks"() {
 
@@ -159,7 +178,7 @@ class SystemNodeFuncTest extends AbstractFuncTest {
 		and:
 		buildScript("""
 
-			def nodeHomeVar = System.properties["nodeHome"] ? System.properties["nodeHome"] : "${AbstractFuncTest.nodeJsDir.toString()}"
+			def nodeHomeVar = System.properties["nodeHome"] ? System.properties["nodeHome"] : "${nodeJsDir.toString()}"
 
 			task failure(type: NodeTask) {
 				ignoreExitValue = true
@@ -192,7 +211,7 @@ class SystemNodeFuncTest extends AbstractFuncTest {
 
 		then:
 		result3.task(":nodeHome").outcome == TaskOutcome.SUCCESS
-		result3.output =~ "NODE_HOME=${AbstractFuncTest.nodeJsDir.toString()}"
+		result3.output =~ "NODE_HOME=${nodeJsDir.toString()}"
 
 		when:
 		def result4 = run("nodeHome")
@@ -201,7 +220,7 @@ class SystemNodeFuncTest extends AbstractFuncTest {
 		result4.task(":nodeHome").outcome == TaskOutcome.UP_TO_DATE
 
 		when:
-		def result5 = run("nodeHome", "-DnodeHome=${AbstractFuncTest.nodeJsDir.toString()}")
+		def result5 = run("nodeHome", "-DnodeHome=${nodeJsDir.toString()}")
 
 		then:
 		result5.task(":nodeHome").outcome == TaskOutcome.UP_TO_DATE
@@ -611,6 +630,76 @@ class SystemNodeFuncTest extends AbstractFuncTest {
 		result.task("yarnTask") == null
 		result.output =~ "Multiple packagers defined. Please configure single packager!"
 
+	}
+
+
+	// Internal methods
+
+	@Override
+	protected GradleRunner prepareRunner(GradleRunner runner) {
+		runner.withNode(nodeJsDir, platformSpecific)
+	}
+
+	def getAddress(String version) {
+		def osName = platformSpecific.getOsName()
+		def osArch = platformSpecific.getOsArch()
+		def ext = platformSpecific.isWindows() ? "zip" : "tar.gz"
+		return "https://nodejs.org/dist/$version/node-$version-$osName-$osArch.$ext"
+	}
+
+	def getInputStream(InputStream s, String address) {
+		return address.endsWith("zip") ? new ZipInputStream( s ) : new TarInputStream( new GZIPInputStream(s) )
+	}
+
+	def downloadNode(String version) {
+		def address = getAddress(version)
+		address.toURL().withInputStream { s ->
+			getInputStream(s, address).with { zs ->
+				def entry
+				while( entry = zs.nextEntry ) {
+					def local = nodeJsDir.resolve( entry.name ).toFile()
+
+					if( entry.isDirectory() ) {
+						local.mkdir()
+					} else {
+						local << zs
+					}
+
+				}
+				zs.close()
+			}
+		}
+
+		Files.list(nodeJsDir).findFirst().orElseThrow{ new IllegalStateException("No nodejs") }
+	}
+
+	def defineExecutable() {
+		if (!platformSpecific.isWindows()) {
+			setExecutable(nodeJsDir.resolve("bin/node"), false)
+			setExecutable(nodeJsDir.resolve("bin/npm"), true)
+			setExecutable(nodeJsDir.resolve("bin/npx"), true)
+		}
+	}
+
+	def setExecutable(Path path, boolean link) {
+		if (link) {
+			defineSymlink(path.getFileName().toString(), path)
+					.toFile().setExecutable(true, true)
+		} else {
+			path.toFile().setExecutable(true, true)
+		}
+	}
+
+	def defineSymlink(String name, Path link) {
+		if (Files.deleteIfExists(link)) {
+			Path parent = link.getParent()
+			Path target = parent.getParent().resolve("lib/node_modules/npm/bin/${name}-cli.js")
+			if (Files.exists(target)) {
+				target.toFile().setExecutable(true, true)
+				link = Files.createSymbolicLink(link, parent.relativize(target))
+			}
+		}
+		return link
 	}
 
 }

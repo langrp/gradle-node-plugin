@@ -86,7 +86,7 @@ class AbstractProjectTest extends Specification {
     }
 
     static void set(Class<?> type, Object target, String fieldName, Object value) {
-        Field field = type.getDeclaredField(fieldName)
+        Field field = getField(type, fieldName)
 
         Field modifiersField = Field.class.getDeclaredField("modifiers");
         modifiersField.setAccessible(true);
@@ -94,6 +94,24 @@ class AbstractProjectTest extends Specification {
 
         field.setAccessible(true)
         field.set(target, value)
+    }
+
+    static Object get(Object target, String fieldName) {
+        Field field = getField(target.getClass(), fieldName)
+        field.setAccessible(true)
+        return field.get(target)
+    }
+
+    private static Field getField(Class<?> type, String fieldName) {
+        while(type != Object.class) {
+            for (Field field : type.getDeclaredFields()) {
+                if (field.getName() == fieldName) {
+                    return field
+                }
+            }
+            type = type.getSuperclass()
+        }
+        throw new NoSuchFieldException(fieldName)
     }
 
 }

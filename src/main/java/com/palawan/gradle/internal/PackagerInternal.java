@@ -200,6 +200,7 @@ public class PackagerInternal extends AbstractExecutable {
 	public void afterEvaluate(Project project, NodeExtension nodeExtension) {
 		setOnSystemPath(!nodeExtension.getDownload());
 		setPlatformSpecific(nodeExtension.getPlatformSpecific());
+		getCli().ifPresent(c -> c.setPlatformSpecific(nodeExtension.getPlatformSpecific()));
 		if (nodeExtension.getDownload()) {
 			project.getTasks().withType(PackagerSetupTask.class, t -> t.dependsOn(NodePlugin.NODE_SETUP_TASK_NAME));
 			project.getTasks().withType(PackagerTask.class, t -> t.dependsOn(setupTaskName.get()));
@@ -220,6 +221,7 @@ public class PackagerInternal extends AbstractExecutable {
 	public void afterEvaluateDefault(Project project, NodeExtension nodeExtension) {
 		setOnSystemPath(!nodeExtension.getDownload());
 		setPlatformSpecific(nodeExtension.getPlatformSpecific());
+		getCli().ifPresent(c -> c.setPlatformSpecific(nodeExtension.getPlatformSpecific()));
 		if (nodeExtension.getDownload()) {
 			project.getTasks().withType(DefaultPackagerTask.class, t -> t.dependsOn(NodePlugin.NODE_SETUP_TASK_NAME));
 			project.getTasks().withType(NodeInstallTask.class, t -> t.dependsOn(NodePlugin.NODE_SETUP_TASK_NAME));

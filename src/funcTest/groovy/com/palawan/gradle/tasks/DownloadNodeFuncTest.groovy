@@ -25,9 +25,132 @@
 
 package com.palawan.gradle.tasks
 
+import com.palawan.gradle.AbstractFuncTest
+import org.gradle.testkit.runner.TaskOutcome
+
 /**
  *
- * @author petr.langr* @since 1.0.0
+ * @author petr.langr
+ * @since 1.0.0
  */
-class DownloadNodeFuncTest {
+class DownloadNodeFuncTest extends AbstractFuncTest {
+
+    def "Download NodeJS"() {
+
+        given:
+        buildScript("""
+            node {
+                download = true
+                version = "14.3.0"
+                workingDir = file("build/nodejs")
+            }
+            
+            task nodeVersion(type: NodeTask) {
+                args = ["--version"]
+            }
+            
+            task npmVersion(type: NpmTask) {
+				command = "-version"
+			}
+            
+        """)
+
+        when:
+        def result1 = run("nodeVersion")
+
+        then:
+        result1.task(":nodeSetup").outcome == TaskOutcome.SUCCESS
+        result1.task(":nodeVersion").outcome == TaskOutcome.SUCCESS
+        result1.output =~ "v14.3.0"
+
+        when:
+        def result2 = run("npmVersion")
+
+        then:
+        result2.task(":nodeSetup").outcome == TaskOutcome.UP_TO_DATE
+        result2.task(":npmSetup") == null
+        result2.task(":npmVersion").outcome == TaskOutcome.SUCCESS
+        result2.output =~ "6.14.5"
+
+        when:
+        buildScript("""
+            node {
+                download = true
+                version = "14.3.0"
+                workingDir = file("tools/nodejs")
+            }
+            
+            task nodeVersion(type: NodeTask) {
+                args = ["--version"]
+            }
+            
+            task npmVersion(type: NpmTask) {
+				command = "-version"
+			}
+            
+        """)
+        def result3 = run("nodeVersion")
+
+        then:
+        result3.task(":nodeSetup").outcome == TaskOutcome.SUCCESS
+        result3.task(":nodeVersion").outcome == TaskOutcome.SUCCESS
+        result3.output =~ "v14.3.0"
+
+        when:
+        def result4 = run("npmVersion")
+
+        then:
+        result4.task(":nodeSetup").outcome == TaskOutcome.UP_TO_DATE
+        result4.task(":npmSetup") == null
+        result4.task(":npmVersion").outcome == TaskOutcome.SUCCESS
+        result4.output =~ "6.14.5"
+
+    }
+
+    def "Download npm"() {
+
+        given:
+        buildScript("""
+            node {
+                download = true
+                workingDir = file("build/nodejs")
+
+                npm {
+                    version = "6.13.7"
+                    workingDir = file("build/npm")
+                }
+            }
+            
+            task npmVersion(type: NpmTask) {
+				command = "-version"
+			}
+			
+			task npxVersion(type: NpxTask) {
+			    command = "-version"
+			}
+            
+        """)
+
+        when:
+        def result1 = run("npmVersion")
+
+        then:
+        result1.task(":nodeSetup").outcome == TaskOutcome.SUCCESS
+        result1.task(":npmSetup").outcome == TaskOutcome.SUCCESS
+        result1.task(":npmVersion").outcome == TaskOutcome.SUCCESS
+        result1.output =~ "6.13.7"
+
+        when:
+        def result2 = run("npxVersion", "--stacktrace")
+
+        then:
+        result2.task(":nodeSetup").outcome == TaskOutcome.UP_TO_DATE
+        result2.task(":npmSetup").outcome == TaskOutcome.UP_TO_DATE
+        result2.task(":npxVersion").outcome == TaskOutcome.SUCCESS
+        result2.output =~ "6.13.7"
+
+        //TODO change parameters for download
+
+    }
+
 }

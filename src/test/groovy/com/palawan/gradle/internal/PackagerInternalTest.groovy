@@ -155,6 +155,8 @@ class PackagerInternalTest extends AbstractProjectTest {
         packager.afterEvaluate(project, nodeExtension)
 
         then:
+        get(packager, "platformSpecific") != null
+        get(packager.cli.get(), "platformSpecific") != null
         setupTask.get().getDependsOn().isEmpty()
         npmTask.getDependsOn().isEmpty()
         npxTask.getDependsOn().isEmpty()

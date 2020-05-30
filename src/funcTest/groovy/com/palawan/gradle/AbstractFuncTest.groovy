@@ -25,40 +25,22 @@
 
 package com.palawan.gradle
 
-
 import com.palawan.gradle.util.PlatformSpecific
-import org.gradle.internal.impldep.org.apache.tools.tar.TarInputStream
 import org.gradle.testkit.runner.GradleRunner
 import spock.lang.Specification
 
 import java.nio.file.Files
 import java.nio.file.Path
-import java.util.zip.GZIPInputStream
-import java.util.zip.ZipInputStream
 /**
  * @author petr.langr
  * @since 1.0.0
  */
 abstract class AbstractFuncTest extends Specification {
 
-	static Path nodeJsDir
+
 	static PlatformSpecific platformSpecific = PlatformSpecific.getInstance()
 	Path testProjectDir
 	File buildFile
-
-	def setupSpec() {
-		nodeJsDir = Files.createTempDirectory("junit-nodejs")
-		nodeJsDir = downloadNode("v${NodePlugin.LTS_VERSION}")
-		defineExecutable()
-
-//		downloadString("https://nodejs.org/dist/")
-	}
-
-	def cleanupSpec() {
-		if (nodeJsDir != null) {
-			nodeJsDir.toFile().deleteDir()
-		}
-	}
 
 	def setup() {
 		testProjectDir = Files.createTempDirectory("junit")
@@ -85,14 +67,17 @@ abstract class AbstractFuncTest extends Specification {
 		return runner(args).buildAndFail()
 	}
 
+	protected GradleRunner prepareRunner(GradleRunner runner) {
+		runner
+	}
+
 	private GradleRunner runner(String[] args) {
-		return GradleRunner.create()
+		return prepareRunner(GradleRunner.create()
 				.withProjectDir(testProjectDir.toFile())
 				.withArguments(args)
 				.withPluginClasspath()
-				.withNode(nodeJsDir, platformSpecific)
 				.withJacoco()
-				.forwardOutput()
+				.forwardOutput())
 	}
 
 	def buildScript(String nodeExtension) {
@@ -113,72 +98,11 @@ abstract class AbstractFuncTest extends Specification {
 		file << content
 	}
 
-	def getAddress(String version) {
-		def osName = platformSpecific.getOsName()
-		def osArch = platformSpecific.getOsArch()
-		def ext = platformSpecific.isWindows() ? "zip" : "tar.gz"
-		return "https://nodejs.org/dist/$version/node-$version-$osName-$osArch.$ext"
-	}
-
-	def getInputStream(InputStream s, String address) {
-		return address.endsWith("zip") ? new ZipInputStream( s ) : new TarInputStream( new GZIPInputStream(s) )
-	}
-
 	def downloadString(String address) {
+		//downloadString("https://nodejs.org/dist/")
 		address.toURL().withInputStream { is ->
 			new InputStreamReader(is).readLines().forEach{l -> println(l)}
 		}
-	}
-
-	def downloadNode(String version) {
-		def address = getAddress(version)
-		address.toURL().withInputStream { s ->
-			getInputStream(s, address).with { zs ->
-				def entry
-				while( entry = zs.nextEntry ) {
-					def local = nodeJsDir.resolve( entry.name ).toFile()
-
-					if( entry.isDirectory() ) {
-						local.mkdir()
-					} else {
-						local << zs
-					}
-
-				}
-				zs.close()
-			}
-		}
-
-		Files.list(nodeJsDir).findFirst().orElseThrow{ new IllegalStateException("No nodejs") }
-	}
-
-	def defineExecutable() {
-		if (!platformSpecific.isWindows()) {
-			setExecutable(nodeJsDir.resolve("bin/node"), false)
-			setExecutable(nodeJsDir.resolve("bin/npm"), true)
-			setExecutable(nodeJsDir.resolve("bin/npx"), true)
-		}
-	}
-
-	def setExecutable(Path path, boolean link) {
-		if (link) {
-			defineSymlink(path.getFileName().toString(), path)
-					.toFile().setExecutable(true, true)
-		} else {
-			path.toFile().setExecutable(true, true)
-		}
-	}
-
-	def defineSymlink(String name, Path link) {
-		if (Files.deleteIfExists(link)) {
-			Path parent = link.getParent()
-			Path target = parent.getParent().resolve("lib/node_modules/npm/bin/${name}-cli.js")
-			if (Files.exists(target)) {
-				target.toFile().setExecutable(true, true)
-				link = Files.createSymbolicLink(link, parent.relativize(target))
-			}
-		}
-		return link
 	}
 
 }

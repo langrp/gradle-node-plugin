@@ -98,6 +98,10 @@ abstract class AbstractFuncTest extends Specification {
 		file << content
 	}
 
+	static String tempFile(String path) {
+		path.replace("/private/", "/")
+	}
+
 	def downloadString(String address) {
 		//downloadString("https://nodejs.org/dist/")
 		address.toURL().withInputStream { is ->

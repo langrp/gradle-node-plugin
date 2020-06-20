@@ -47,6 +47,7 @@ class ExecutableDataTest extends Specification {
                 .setIgnoreExitValue(true)
                 .addEnvironmentVariables([NODE_HOME: "/tmp/junit-nodejs/bin"])
                 .addEnvironmentVariables([YARN_HOME: "/tmp/junit-yarn/bin"])
+                .addEnvironmentVariables([:])
                 .withPathLocation("/tmp/junit-nodejs/bin")
                 .withPathLocation("/tmp/junit-npm/bin")
 

@@ -51,7 +51,7 @@ val functionalTest = task<Test>("functionalTest") {
 	shouldRunAfter("test")
 }
 
-configure<JacocoPluginExtension> { toolVersion = "0.8.4" }
+configure<JacocoPluginExtension> { toolVersion = "0.8.5" }
 
 val jacocoTestReport = project.tasks.named<JacocoReport>("jacocoTestReport") {
 	executionData(functionalTest)
@@ -64,6 +64,7 @@ val jacocoTestReport = project.tasks.named<JacocoReport>("jacocoTestReport") {
 
 val mainSources = the<SourceSetContainer>()["main"]
 val jacocoTestCoverageVerification = project.tasks.named<JacocoCoverageVerification>("jacocoTestCoverageVerification") {
+	mustRunAfter(jacocoTestReport)
 	executionData(functionalTest)
 	violationRules {
 		rule {
@@ -74,12 +75,6 @@ val jacocoTestCoverageVerification = project.tasks.named<JacocoCoverageVerificat
 			}
 		}
 	}
-	classDirectories.setFrom(
-			mainSources.output.asFileTree.matching {
-				// exclude main()
-				exclude("com/palawan/gradle/util/DoubleChecked.class")
-			}
-	)
 }
 
 // Tasks order

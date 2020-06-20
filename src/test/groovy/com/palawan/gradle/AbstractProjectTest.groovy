@@ -85,6 +85,24 @@ class AbstractProjectTest extends Specification {
         platformSpecific.getCommand(!null) >> { args -> args[0] + ".cmd" }
     }
 
+    static boolean isSameFile(Path path1, Path path2) {
+        return isSameFile(path1.toString(), path2.toString())
+    }
+
+    static boolean isSameFile(String path1, String path2) {
+        String s1 = tempFile(path1)
+        String s2 = tempFile(path2)
+        return s1 == s2
+    }
+
+    static String tempFile(Path path) {
+        tempFile(path.toString())
+    }
+
+    static String tempFile(String path) {
+        path.replace("/private/", "/")
+    }
+
     static void set(Class<?> type, Object target, String fieldName, Object value) {
         Field field = getField(type, fieldName)
 

@@ -328,7 +328,7 @@ class PackagerInternalTest extends AbstractProjectTest {
         def bin = packager.getExecutableBinDir()
 
         then:
-        bin == testProjectDir.resolve(".gradle/cnpm/cnpm-latest/bin")
+        isSameFile(bin, testProjectDir.resolve(".gradle/cnpm/cnpm-latest/bin"))
 
     }
 
@@ -344,7 +344,7 @@ class PackagerInternalTest extends AbstractProjectTest {
         def bin = packager.getExecutableBinDir()
 
         then:
-        bin == testProjectDir.resolve(".gradle/pnpm/pnpm-v6.14.4/bin")
+        isSameFile(bin, testProjectDir.resolve(".gradle/pnpm/pnpm-v6.14.4/bin"))
 
     }
 
@@ -376,7 +376,7 @@ class PackagerInternalTest extends AbstractProjectTest {
         def script = packager.getScriptFile()
 
         then:
-        script.get() == testProjectDir.resolve(".gradle/nodejs/node-v12.16.3-linux-x64/lib/node_modules/npm/bin/npm-cli.js")
+        isSameFile(script.get(), testProjectDir.resolve(".gradle/nodejs/node-v12.16.3-linux-x64/lib/node_modules/npm/bin/npm-cli.js"))
 
     }
 
@@ -392,7 +392,7 @@ class PackagerInternalTest extends AbstractProjectTest {
         def script = packager.getScriptFile()
 
         then:
-        script.get() == testProjectDir.resolve(".gradle/nodejs/node-v12.16.3-win-x64/node_modules/npm/bin/npm-cli.js")
+        isSameFile(script.get(), testProjectDir.resolve(".gradle/nodejs/node-v12.16.3-win-x64/node_modules/npm/bin/npm-cli.js"))
 
     }
 
@@ -556,7 +556,7 @@ class PackagerInternalTest extends AbstractProjectTest {
         def dir = packager.getWorkingDir()
 
         then:
-        dir == testProjectDir.resolve(".gradle/pnpm/pnpm-latest")
+        isSameFile(dir, testProjectDir.resolve(".gradle/pnpm/pnpm-latest"))
 
     }
 
@@ -572,7 +572,7 @@ class PackagerInternalTest extends AbstractProjectTest {
         def dir = packager.getWorkingDir()
 
         then:
-        dir == testProjectDir.resolve(".gradle/pnpm/pnpm-v6.14.4")
+        isSameFile(dir, testProjectDir.resolve(".gradle/pnpm/pnpm-v6.14.4"))
 
     }
 
@@ -636,7 +636,7 @@ class PackagerInternalTest extends AbstractProjectTest {
         def data = packager.executableData(["-version"])
 
         then:
-        data.executable == testProjectDir.resolve(".gradle/yarn/yarn-latest/bin/yarn").toString()
+        isSameFile(data.executable, testProjectDir.resolve(".gradle/yarn/yarn-latest/bin/yarn").toString())
         data.args == ["-version"]
         data.workingDir == null
         data.environmentVariables.isEmpty()
@@ -659,7 +659,7 @@ class PackagerInternalTest extends AbstractProjectTest {
         def data = packager.executableData(["-version"])
 
         then:
-        data.executable == testProjectDir.resolve(".gradle/yarn/yarn-latest/bin/yarn.cmd").toString()
+        isSameFile(data.executable, testProjectDir.resolve(".gradle/yarn/yarn-latest/bin/yarn.cmd").toString())
         data.args == ["-version"]
         data.workingDir == null
         data.environmentVariables.isEmpty()
@@ -684,8 +684,9 @@ class PackagerInternalTest extends AbstractProjectTest {
         def data = packager.executableData(["-version"])
 
         then:
-        data.executable == testProjectDir.resolve(".gradle/nodejs/node-v12.16.3-linux-x64/bin/node").toString()
-        data.args == [testProjectDir.resolve(".gradle/nodejs/node-v12.16.3-linux-x64/lib/node_modules/npm/bin/npm-cli.js").toString(), "-version"]
+        isSameFile(data.executable, testProjectDir.resolve(".gradle/nodejs/node-v12.16.3-linux-x64/bin/node").toString())
+        isSameFile(data.args[0], testProjectDir.resolve(".gradle/nodejs/node-v12.16.3-linux-x64/lib/node_modules/npm/bin/npm-cli.js").toString())
+        data.args[1] == '-version'
         data.workingDir == null
         data.environmentVariables.isEmpty()
         data.path.isEmpty()
@@ -707,7 +708,7 @@ class PackagerInternalTest extends AbstractProjectTest {
         def data = packager.executableData(["-version"])
 
         then:
-        data.executable == testProjectDir.resolve(".gradle/npm/npm-latest/bin/npx").toString()
+        isSameFile(data.executable, testProjectDir.resolve(".gradle/npm/npm-latest/bin/npx").toString())
         data.args == ["-version"]
         data.workingDir == null
         data.environmentVariables.isEmpty()

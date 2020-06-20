@@ -59,7 +59,7 @@ class PackagerCliInternalTest extends AbstractProjectTest {
         then:
         cli.name == "npx"
         command == "npx"
-        script.get() == testProjectDir.resolve(".gradle/nodejs/node-v12.16.3-linux-x64/lib/node_modules/npm/npx-cli.js")
+        isSameFile(script.get(), testProjectDir.resolve(".gradle/nodejs/node-v12.16.3-linux-x64/lib/node_modules/npm/npx-cli.js"))
 
     }
 

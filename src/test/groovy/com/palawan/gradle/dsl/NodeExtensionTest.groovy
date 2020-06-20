@@ -54,7 +54,7 @@ class NodeExtensionTest extends AbstractProjectTest {
         !node.getDownload()
         node.getCommand() == "node"
         node.getVersion() == "12.16.3"
-        node.getWorkingDir() == testProjectDir.resolve(".gradle/nodejs")
+        isSameFile(node.getWorkingDir(), testProjectDir.resolve(".gradle/nodejs"))
         node.getUrl() == "https://nodejs.org/dist"
 
     }

@@ -198,7 +198,7 @@ class SystemNodeFuncTest extends AbstractFuncTest {
 
 		then:
 		result1.task(":failure").outcome == TaskOutcome.SUCCESS
-		result1.output =~ /Error: Cannot find module '${testProjectDir.resolve("unknown.js")}'/
+		tempFile(result1.output) =~ /Error: Cannot find module '${testProjectDir.resolve("unknown.js")}'/
 
 		when:
 		def result2 = run("failure")

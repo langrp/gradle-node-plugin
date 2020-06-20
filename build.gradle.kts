@@ -19,6 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
 	id("java")
@@ -86,13 +87,23 @@ dependencies {
 	}
 }
 
-//tasks.withType<Test> {
+tasks.withType<JacocoCoverageVerification> {
+	classDirectories.setFrom(
+		sourceSets["main"].output.asFileTree.matching {
+			exclude("com/palawan/gradle/util/DoubleChecked.class")
+		}
+	)
+}
+
+tasks.withType<Test> {
+//	maxParallelForks = if (Runtime.getRuntime().availableProcessors() > 1) 2 else 1
 //	useJUnitPlatform()
-//	testLogging {
-//		events = setOf(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
-//		showStandardStreams = true
-//	}
-//}
+	testLogging {
+		events = setOf(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
+		showCauses = true
+		showStandardStreams = false
+	}
+}
 
 //signing {
 //    required { gradle.taskGraph.hasTask("uploadArchives") }

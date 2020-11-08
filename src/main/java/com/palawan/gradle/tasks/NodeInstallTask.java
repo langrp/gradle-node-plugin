@@ -57,13 +57,11 @@ public class NodeInstallTask extends CommandExecutionTask {
 	}
 
 	@OutputFiles
-	@PathSensitive(PathSensitivity.RELATIVE)
 	public Collection<String> getOutputFiles() {
 		return packager.get().getOutputFiles();
 	}
 
 	@OutputDirectories
-	@PathSensitive(PathSensitivity.RELATIVE)
 	public Collection<String> getOutputDirectories() {
 		return packager.get().getOutputDirectories();
 	}

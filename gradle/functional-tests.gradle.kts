@@ -51,10 +51,11 @@ val functionalTest = task<Test>("functionalTest") {
 	shouldRunAfter("test")
 }
 
-configure<JacocoPluginExtension> { toolVersion = "0.8.5" }
+configure<JacocoPluginExtension> { toolVersion = "0.8.6" }
 
 val jacocoTestReport = project.tasks.named<JacocoReport>("jacocoTestReport") {
 	executionData(functionalTest)
+	dependsOn(functionalTest)
 	reports {
 		xml.isEnabled = false
 		csv.isEnabled = false
@@ -66,20 +67,16 @@ val mainSources = the<SourceSetContainer>()["main"]
 val jacocoTestCoverageVerification = project.tasks.named<JacocoCoverageVerification>("jacocoTestCoverageVerification") {
 	mustRunAfter(jacocoTestReport)
 	executionData(functionalTest)
+	dependsOn(functionalTest)
 	violationRules {
 		rule {
 			limit {
 				counter = "LINE"
 				value = "COVEREDRATIO"
-				minimum = java.math.BigDecimal.ONE
+				minimum = java.math.BigDecimal("0.96")
 			}
 		}
 	}
-}
-
-// Tasks order
-project.tasks.named("test") {
-	finalizedBy(functionalTest)
 }
 
 project.tasks.named("check") {

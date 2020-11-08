@@ -96,17 +96,9 @@ tasks.withType<JacocoCoverageVerification> {
 }
 
 tasks.withType<Test> {
-//	maxParallelForks = if (Runtime.getRuntime().availableProcessors() > 1) 2 else 1
-//	useJUnitPlatform()
 	testLogging {
 		events = setOf(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
 		showCauses = true
 		showStandardStreams = false
 	}
 }
-
-//signing {
-//    required { gradle.taskGraph.hasTask("uploadArchives") }
-//    sign { configurations.archives }
-//}
-

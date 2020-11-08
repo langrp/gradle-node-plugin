@@ -51,13 +51,13 @@ public abstract class ExecutionTask extends DefaultTask {
 	private Map<String, String> environment = Map.of();
 
 	@Nullable
-	private File workingDir;
+	private String workingDirPath;
 
 	@TaskAction
 	public void execute() {
 
 		ExecutableData executable = getExecutable()
-				.setWorkingDir(workingDir == null ? getProject().getProjectDir() : workingDir)
+				.setWorkingDir(workingDirPath == null ? getProject().getProjectDir() : new File(workingDirPath))
 				.setIgnoreExitValue(ignoreExitValue)
 				.addEnvironmentVariables(environment);
 
@@ -123,8 +123,8 @@ public abstract class ExecutionTask extends DefaultTask {
 	@Input
 	@Optional
 	@Nullable
-	public File getWorkingDir() {
-		return workingDir;
+	public String getWorkingDir() {
+		return workingDirPath;
 	}
 
 	/**
@@ -132,7 +132,7 @@ public abstract class ExecutionTask extends DefaultTask {
 	 *
 	 * @param workingDir Set value of workingDir
 	 */
-	public void setWorkingDir(File workingDir) {
-		this.workingDir = workingDir;
+	public void setWorkingDir(String workingDir) {
+		this.workingDirPath = workingDir;
 	}
 }

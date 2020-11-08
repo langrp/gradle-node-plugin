@@ -76,7 +76,8 @@ class SystemNodeFuncTest extends AbstractFuncTest {
 
 		then:
 		result.task(":tasks").outcome == TaskOutcome.SUCCESS
-		result.output =~ /nodeInstall - Install node packages using chosen packager\nnodeSetup - Prepares specific version of NodeJS./
+		result.output =~ /nodeInstall - Install node packages using chosen packager/
+		result.output =~ /nodeSetup - Prepares specific version of NodeJS/
 
 	}
 
@@ -90,16 +91,16 @@ class SystemNodeFuncTest extends AbstractFuncTest {
 			
 			def script = System.properties["script"] ? System.properties["script"] : "app.js"
 			
-			task npxVersion(type: NpxTask) {
-				command = "-version"
+			task npxHelp(type: NpxTask) {
+				command = "--help"
 			}
 			
-			task npmVersion(type: NpmTask) {
-				command = "-version"
+			task npmHelp(type: NpmTask) {
+				command = "help"
 			}
 			
-			task nodeVersion(type: NodeTask) {
-				args = ['--version']
+			task nodeHelp(type: NodeTask) {
+				args = ['--help']
 			}
 			
 			task helloWorld(type: NodeTask) {
@@ -113,33 +114,33 @@ class SystemNodeFuncTest extends AbstractFuncTest {
 		writeFile("app.js", """
 			console.log("Hello World")
 		""")
-		writeFile("version.js", """
-			console.log(`\${process.version}`);
+		writeFile("command.js", """
+			console.log(`\${process.cwd()}`);
 		""")
 
 		when:
-		def result = run("nodeVersion")
+		def result = run("nodeHelp")
 
 		then:
 		result.task(":${NodePlugin.NODE_SETUP_TASK_NAME}") == null // did not run
-		result.task(":nodeVersion").outcome == TaskOutcome.SUCCESS
-		result.output =~ /\nv${NodePlugin.LTS_VERSION}\n/
+		result.task(":nodeHelp").outcome == TaskOutcome.SUCCESS
+		result.output =~ /Usage: node/
 
 		when:
-		def result2 = run('npmVersion')
+		def result2 = run('npmHelp')
 
 		then:
 		result2.task(":${NodePlugin.NODE_SETUP_TASK_NAME}") == null // did not run
-		result2.task(":npmVersion").outcome == TaskOutcome.SUCCESS
-		result2.output =~ /\n6.14.4\n/
+		result2.task(":npmHelp").outcome == TaskOutcome.SUCCESS
+		result2.output =~ /\nUsage: npm <command>\n/
 
 		when:
-		def result3 = run('npxVersion')
+		def result3 = run('npxHelp')
 
 		then:
 		result3.task(":${NodePlugin.NODE_SETUP_TASK_NAME}") == null // did not run
-		result3.task(":npxVersion").outcome == TaskOutcome.SUCCESS
-		result3.output =~ /\n6.14.4\n/
+		result3.task(":npxHelp").outcome == TaskOutcome.SUCCESS
+		result3.output =~ /Execute binaries from npm packages/
 
 		when:
 		def result4 = run("helloWorld")
@@ -155,11 +156,11 @@ class SystemNodeFuncTest extends AbstractFuncTest {
 		result5.task(":helloWorld").outcome == TaskOutcome.UP_TO_DATE
 
 		when:
-		def result6 = run("helloWorld", "-Dscript=version.js")
+		def result6 = run("helloWorld", "-Dscript=command.js")
 
 		then:
 		result6.task(":helloWorld").outcome == TaskOutcome.SUCCESS
-		result6.output =~ /\nv${NodePlugin.LTS_VERSION}\n/
+		result6.output =~ /${testProjectDir.toString()}/
 
 	}
 
@@ -557,27 +558,27 @@ class SystemNodeFuncTest extends AbstractFuncTest {
 				yarn { }
 			}
 			
-			task npmVersion(type: NpmTask) {
-				command = "-version"
+			task npmHelp(type: NpmTask) {
+				command = "help"
 			}
 			
-			task yarnVersion(type: YarnTask) {
-				command = "-version"
+			task yarnHelp(type: YarnTask) {
+				command = "unknown"
 			}
 		""")
 
 		when:
-		def result1 = runAndFail("yarnVersion")
+		def result1 = runAndFail("yarnHelp")
 
 		then:
-		result1.task(":yarnVersion").outcome == TaskOutcome.FAILED
+		result1.task(":yarnHelp").outcome == TaskOutcome.FAILED
 
 		when:
-		def result2 = run("npmVersion")
+		def result2 = run("npmHelp")
 
 		then:
-		result2.task(":npmVersion").outcome == TaskOutcome.SUCCESS
-		result2.output =~ NodePlugin.LTS_NPM_VERSION
+		result2.task(":npmHelp").outcome == TaskOutcome.SUCCESS
+		result2.output =~ /\nUsage: npm <command>\n/
 
 	}
 
@@ -589,27 +590,27 @@ class SystemNodeFuncTest extends AbstractFuncTest {
 				pnpm { }
 			}
 			
-			task npmVersion(type: NpmTask) {
-				command = "-version"
+			task npmHelp(type: NpmTask) {
+				command = "help"
 			}
 			
-			task pnpxVersion(type: PnpxTask) {
-				command = "--version"
+			task pnpxHelp(type: PnpxTask) {
+				command = "help"
 			}
 		""")
 
 		when:
-		def result1 = runAndFail("pnpxVersion")
+		def result1 = runAndFail("pnpxHelp")
 
 		then:
-		result1.task(":pnpxVersion").outcome == TaskOutcome.FAILED
+		result1.task(":pnpxHelp").outcome == TaskOutcome.FAILED
 
 		when:
-		def result2 = run("npmVersion")
+		def result2 = run("npmHelp")
 
 		then:
-		result2.task(":npmVersion").outcome == TaskOutcome.SUCCESS
-		result2.output =~ NodePlugin.LTS_NPM_VERSION
+		result2.task(":npmHelp").outcome == TaskOutcome.SUCCESS
+		result2.output =~ /\nUsage: npm <command>\n/
 
 	}
 

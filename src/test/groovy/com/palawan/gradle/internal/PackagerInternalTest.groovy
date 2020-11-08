@@ -636,7 +636,7 @@ class PackagerInternalTest extends AbstractProjectTest {
         def data = packager.executableData(["-version"])
 
         then:
-        isSameFile(data.executable, testProjectDir.resolve(".gradle/yarn/yarn-latest/bin/yarn").toString())
+        isSameFile(data.executable, testProjectDir.resolve(".gradle/yarn/yarn-latest/bin/yarn"))
         data.args == ["-version"]
         data.workingDir == null
         data.environmentVariables.isEmpty()
@@ -659,7 +659,7 @@ class PackagerInternalTest extends AbstractProjectTest {
         def data = packager.executableData(["-version"])
 
         then:
-        isSameFile(data.executable, testProjectDir.resolve(".gradle/yarn/yarn-latest/bin/yarn.cmd").toString())
+        isSameFile(data.executable, testProjectDir.resolve(".gradle/yarn/yarn-latest/bin/yarn.cmd"))
         data.args == ["-version"]
         data.workingDir == null
         data.environmentVariables.isEmpty()
@@ -684,8 +684,8 @@ class PackagerInternalTest extends AbstractProjectTest {
         def data = packager.executableData(["-version"])
 
         then:
-        isSameFile(data.executable, testProjectDir.resolve(".gradle/nodejs/node-v12.16.3-linux-x64/bin/node").toString())
-        isSameFile(data.args[0], testProjectDir.resolve(".gradle/nodejs/node-v12.16.3-linux-x64/lib/node_modules/npm/bin/npm-cli.js").toString())
+        isSameFile(data.executable, testProjectDir.resolve(".gradle/nodejs/node-v12.16.3-linux-x64/bin/node"))
+        isSameFile(data.args[0], testProjectDir.resolve(".gradle/nodejs/node-v12.16.3-linux-x64/lib/node_modules/npm/bin/npm-cli.js"))
         data.args[1] == '-version'
         data.workingDir == null
         data.environmentVariables.isEmpty()
@@ -708,7 +708,7 @@ class PackagerInternalTest extends AbstractProjectTest {
         def data = packager.executableData(["-version"])
 
         then:
-        isSameFile(data.executable, testProjectDir.resolve(".gradle/npm/npm-latest/bin/npx").toString())
+        isSameFile(data.executable, testProjectDir.resolve(".gradle/npm/npm-latest/bin/npx"))
         data.args == ["-version"]
         data.workingDir == null
         data.environmentVariables.isEmpty()
@@ -765,7 +765,7 @@ class PackagerInternalTest extends AbstractProjectTest {
 
     }
 
-    @IgnoreIf({ System.getProperty("os.name").contains("windows") })
+    @IgnoreIf({ System.getProperty("os.name").contains("Windows") })
     def "setExecutablePosixRights"() {
 
         given:
@@ -792,6 +792,7 @@ class PackagerInternalTest extends AbstractProjectTest {
 
     }
 
+    @IgnoreIf({ System.getProperty("os.name").contains("Windows") })
     def "setExecutablePosixRights yarn"() {
 
         given:

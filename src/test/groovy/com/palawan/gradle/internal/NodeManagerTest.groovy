@@ -121,7 +121,7 @@ class NodeManagerTest extends AbstractProjectTest {
         def data = nodeManager.executableData(["/tmp/junit/npm-cli.js"])
 
         then:
-        isSameFile(data.executable, testProjectDir.resolve(".gradle/nodejs/node-v12.16.3-linux-x64/bin/node").toString())
+        isSameFile(data.executable, testProjectDir.resolve(".gradle/nodejs/node-v12.16.3-linux-x64/bin/node"))
         data.args == ["/tmp/junit/npm-cli.js"]
 
     }
@@ -141,7 +141,7 @@ class NodeManagerTest extends AbstractProjectTest {
         def data = nodeManager.executableData(["/tmp/junit/npm-cli.js"])
 
         then:
-        isSameFile(data.executable, testProjectDir.resolve(".gradle/nodejs/node-v12.16.3-win-x64/node.exe").toString())
+        isSameFile(data.executable, testProjectDir.resolve(".gradle/nodejs/node-v12.16.3-win-x64/node.exe"))
         data.args == ["/tmp/junit/npm-cli.js"]
 
     }
@@ -179,7 +179,7 @@ class NodeManagerTest extends AbstractProjectTest {
         def data = nodeManager.executableData(["/tmp/junit/npm-cli.js"])
 
         then:
-        isSameFile(data.executable, testProjectDir.resolve(".gradle/nodejs/node-v12.16.3-linux-x64/bin/nodejs").toString())
+        isSameFile(data.executable, testProjectDir.resolve(".gradle/nodejs/node-v12.16.3-linux-x64/bin/nodejs"))
         data.args == ["/tmp/junit/npm-cli.js"]
 
     }
@@ -278,7 +278,7 @@ class NodeManagerTest extends AbstractProjectTest {
 
     }
 
-    @IgnoreIf({ System.getProperty("os.name").contains("windows") })
+    @IgnoreIf({ System.getProperty("os.name").contains("Windows") })
     def "setExecutablePosixRights"() {
 
         given:
@@ -302,6 +302,7 @@ class NodeManagerTest extends AbstractProjectTest {
 
     }
 
+    @IgnoreIf({ System.getProperty("os.name").contains("Windows") })
     def "setExecutablePosixRights not downloaded"() {
 
         given:

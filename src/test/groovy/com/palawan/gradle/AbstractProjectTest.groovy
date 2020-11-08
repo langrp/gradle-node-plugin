@@ -35,6 +35,8 @@ import java.lang.reflect.Field
 import java.lang.reflect.Modifier
 import java.nio.file.Files
 import java.nio.file.Path
+import java.nio.file.Paths
+
 /**
  *
  * @author petr.langr
@@ -86,21 +88,20 @@ class AbstractProjectTest extends Specification {
     }
 
     static boolean isSameFile(Path path1, Path path2) {
-        return isSameFile(path1.toString(), path2.toString())
+        return tempPath(path1) == tempPath(path2)
     }
 
-    static boolean isSameFile(String path1, String path2) {
-        String s1 = tempFile(path1)
-        String s2 = tempFile(path2)
-        return s1 == s2
+    static boolean isSameFile(String path1, Path path2) {
+        return Paths.get(tempFile(path1)) == tempPath(path2)
     }
 
-    static String tempFile(Path path) {
-        tempFile(path.toString())
+    static Path tempPath(Path path) {
+        Paths.get(tempFile(path.toString()))
     }
 
     static String tempFile(String path) {
         path.replace("/private/", "/")
+                .replace("\\RUNNER~1", "\\runneradmin")
     }
 
     static void set(Class<?> type, Object target, String fieldName, Object value) {

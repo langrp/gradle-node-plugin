@@ -74,7 +74,7 @@ class AbstractProjectTest extends Specification {
         platformSpecific.getOsName() >> "linux"
         platformSpecific.getOsArch() >> "x64"
         platformSpecific.isWindows() >> false
-
+        platformSpecific.getBinPath(_) >> { callRealMethod() }
         platformSpecific.getExecutable(!null) >> { args -> args[0]}
         platformSpecific.getCommand(!null) >> { args -> args[0]}
     }
@@ -83,6 +83,7 @@ class AbstractProjectTest extends Specification {
         platformSpecific.getOsName() >> "win"
         platformSpecific.getOsArch() >> "x64"
         platformSpecific.isWindows() >> true
+        platformSpecific.getBinPath(_) >> { callRealMethod() }
         platformSpecific.getExecutable(!null) >> { args -> args[0] + ".exe" }
         platformSpecific.getCommand(!null) >> { args -> args[0] + ".cmd" }
     }

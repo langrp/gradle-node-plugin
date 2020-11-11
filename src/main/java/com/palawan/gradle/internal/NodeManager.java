@@ -128,9 +128,7 @@ public class NodeManager {
 	 * @return Node bin directory path
 	 */
 	public Path getBinDir() {
-		return platformSpecific.isWindows() ?
-				versionWorkingDir.get() :
-				versionWorkingDir.get().resolve("bin");
+		return platformSpecific.getBinPath(versionWorkingDir.get());
 	}
 
 	/**

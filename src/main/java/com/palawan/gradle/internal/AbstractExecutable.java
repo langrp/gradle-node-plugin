@@ -137,6 +137,10 @@ abstract class AbstractExecutable {
 		this.platformSpecific = platformSpecific;
 	}
 
+	protected PlatformSpecific getPlatformSpecific() {
+		return platformSpecific;
+	}
+
 	private boolean getOnSystemPath() {
 		return parent == null && nodeManager == null ? onSystemPath :
 				parent != null ? parent.getOnSystemPath() : nodeManager.getOnSystemPath();

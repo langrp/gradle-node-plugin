@@ -32,7 +32,8 @@ import java.nio.file.Paths
 
 /**
  *
- * @author petr.langr* @since 1.0.0
+ * @author petr.langr
+ * @since 1.0.0
  */
 class PackagerCliInternalTest extends AbstractProjectTest {
 
@@ -79,6 +80,10 @@ class PackagerCliInternalTest extends AbstractProjectTest {
     def "getExecutableBinDir"() {
 
         given:
+        mockLinux()
+
+        and:
+        parent.setPlatformSpecific(nodeExtension.getPlatformSpecific())
         cli = new PackagerCliInternal(new PackagerCliData().setCommand("npx").setLocalScript("npx-cli.js"), parent)
 
         when:
@@ -86,6 +91,23 @@ class PackagerCliInternalTest extends AbstractProjectTest {
 
         then:
         bin == Paths.get("/tmp/junit/npm-latest/bin")
+
+    }
+
+    def "getExecutableBinDir windows"() {
+
+        given:
+        mockWindows()
+
+        and:
+        parent.setPlatformSpecific(nodeExtension.getPlatformSpecific())
+        cli = new PackagerCliInternal(new PackagerCliData().setCommand("npx").setLocalScript("npx-cli.js"), parent)
+
+        when:
+        def bin = cli.getExecutableBinDir()
+
+        then:
+        bin == Paths.get("/tmp/junit/npm-latest")
 
     }
 

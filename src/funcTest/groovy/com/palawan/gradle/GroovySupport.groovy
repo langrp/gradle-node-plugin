@@ -44,7 +44,7 @@ class GroovySupport {
 
 	static GradleRunner withNode(GradleRunner self, Path nodeHome, PlatformSpecific platformSpecific) {
 		String pathName = System.getenv().containsKey("Path") ? "Path" : "PATH"
-		String nodePath = platformSpecific.isWindows() ? nodeHome.toString() : nodeHome.resolve("bin").toString()
+		String nodePath = platformSpecific.getBinPath(nodeHome).toString()
 		String path = System.getenv(pathName) + File.pathSeparator + nodePath
 		return self.withEnvironment(Map.of(pathName, path))
 	}

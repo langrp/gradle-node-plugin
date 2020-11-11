@@ -322,7 +322,11 @@ class PackagerInternalTest extends AbstractProjectTest {
     def "GetExecutableBinDir"() {
 
         given:
+        mockLinux()
+
+        and:
         packager = PackagerInternal.cnpm().workingDir(testProjectDir.resolve(".gradle/cnpm"))
+        packager.setPlatformSpecific(nodeExtension.getPlatformSpecific())
 
         when:
         def bin = packager.getExecutableBinDir()
@@ -332,10 +336,31 @@ class PackagerInternalTest extends AbstractProjectTest {
 
     }
 
+    def "GetExecutableBinDir windows"() {
+
+        given:
+        mockWindows()
+
+        and:
+        packager = PackagerInternal.cnpm().workingDir(testProjectDir.resolve(".gradle/cnpm"))
+        packager.setPlatformSpecific(nodeExtension.getPlatformSpecific())
+
+        when:
+        def bin = packager.getExecutableBinDir()
+
+        then:
+        isSameFile(bin, testProjectDir.resolve(".gradle/cnpm/cnpm-latest"))
+
+    }
+
     def "GetExecutableBinDir version"() {
 
         given:
+        mockLinux()
+
+        and:
         packager = PackagerInternal.pnpm().workingDir(testProjectDir.resolve(".gradle/pnpm"))
+        packager.setPlatformSpecific(nodeExtension.getPlatformSpecific())
 
         and:
         packager.getData().setVersion("6.14.4")
@@ -348,10 +373,54 @@ class PackagerInternalTest extends AbstractProjectTest {
 
     }
 
+    def "GetExecutableBinDir version windows"() {
+
+        given:
+        mockWindows()
+
+        and:
+        packager = PackagerInternal.pnpm().workingDir(testProjectDir.resolve(".gradle/pnpm"))
+        packager.setPlatformSpecific(nodeExtension.getPlatformSpecific())
+
+        and:
+        packager.getData().setVersion("6.14.4")
+
+        when:
+        def bin = packager.getExecutableBinDir()
+
+        then:
+        isSameFile(bin, testProjectDir.resolve(".gradle/pnpm/pnpm-v6.14.4"))
+
+    }
+
     def "GetExecutableBinDir no workingDir"() {
 
         given:
+        mockLinux()
+
+        and:
         packager = PackagerInternal.pnpm()
+        packager.setPlatformSpecific(nodeExtension.getPlatformSpecific())
+
+        and:
+        packager.getData().setVersion("6.14.4")
+
+        when:
+        packager.getExecutableBinDir()
+
+        then:
+        thrown(NullPointerException.class)
+
+    }
+
+    def "GetExecutableBinDir no workingDir windows"() {
+
+        given:
+        mockWindows()
+
+        and:
+        packager = PackagerInternal.pnpm()
+        packager.setPlatformSpecific(nodeExtension.getPlatformSpecific())
 
         and:
         packager.getData().setVersion("6.14.4")
@@ -659,7 +728,7 @@ class PackagerInternalTest extends AbstractProjectTest {
         def data = packager.executableData(["-version"])
 
         then:
-        isSameFile(data.executable, testProjectDir.resolve(".gradle/yarn/yarn-latest/bin/yarn.cmd"))
+        isSameFile(data.executable, testProjectDir.resolve(".gradle/yarn/yarn-latest/yarn.cmd"))
         data.args == ["-version"]
         data.workingDir == null
         data.environmentVariables.isEmpty()
@@ -701,6 +770,7 @@ class PackagerInternalTest extends AbstractProjectTest {
 
         and:
         packager = PackagerInternal.npm().workingDir(testProjectDir.resolve(".gradle/npm"))
+        packager.setPlatformSpecific(nodeExtension.getPlatformSpecific())
         packager.getData().setCommand("npx")
         packager.setOnSystemPath(false)
 

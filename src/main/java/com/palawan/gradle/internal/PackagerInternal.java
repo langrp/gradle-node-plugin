@@ -239,7 +239,7 @@ public class PackagerInternal extends AbstractExecutable {
 
 	@Override
 	protected Path getExecutableBinDir() {
-		return workingDir.get().resolve("bin");
+		return getPlatformSpecific().getBinPath(workingDir.get());
 	}
 
 	@Override

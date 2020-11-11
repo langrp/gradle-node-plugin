@@ -28,6 +28,7 @@ package com.palawan.gradle.util;
 import org.gradle.api.GradleException;
 
 import java.io.*;
+import java.nio.file.Path;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
@@ -102,6 +103,16 @@ public interface PlatformSpecific {
 	 */
 	default String getExecutable(String exec) {
 		return isWindows() ? exec + ".exe" : exec;
+	}
+
+	/**
+	 * Computes platform specific bin directory based on given working
+	 * directory as parent. Bin directory is a child of the parent one.
+	 * @param workingDir Working directory to get bin dir from
+	 * @return Platform specific bin directory
+	 */
+	default Path getBinPath(Path workingDir) {
+		return isWindows() ? workingDir : workingDir.resolve("bin");
 	}
 
 	static String execute(String... command) throws IOException, InterruptedException {

@@ -119,7 +119,7 @@ class SystemNodeFuncTest extends AbstractFuncTest {
 		""")
 
 		when:
-		def result = run("nodeHelp", "--stacktrace")
+		def result = run("nodeHelp")
 
 		then:
 		result.task(":${NodePlugin.NODE_SETUP_TASK_NAME}") == null // did not run
@@ -127,8 +127,7 @@ class SystemNodeFuncTest extends AbstractFuncTest {
 		result.output =~ /Usage: node/
 
 		when:
-		Files.walk(nodeJsDir).forEach {println(it)  }
-		def result2 = run('npmHelp', "--stacktrace")
+		def result2 = run('npmHelp')
 
 		then:
 		result2.task(":${NodePlugin.NODE_SETUP_TASK_NAME}") == null // did not run

@@ -148,10 +148,9 @@ abstract class AbstractExecutable {
 
 	private String computeExecutable() {
 		String command = getCommand();
+		command = name.equals(command) ? platformSpecific.getCommand(command) : command;
 		return getOnSystemPath() ? command :
-				getExecutableBinDir().resolve(
-						name.equals(command) ? platformSpecific.getCommand(command) : command
-				).toAbsolutePath().toString();
+				getExecutableBinDir().resolve(command).toAbsolutePath().toString();
 	}
 
 	/**

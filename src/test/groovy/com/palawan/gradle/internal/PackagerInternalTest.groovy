@@ -682,7 +682,31 @@ class PackagerInternalTest extends AbstractProjectTest {
         def data = packager.executableData(["-version"])
 
         then:
-        data.executable == "pnpm"
+        data.executable == "pnpm.cmd"
+        data.args == ["-version"]
+        data.workingDir == null
+        data.environmentVariables.isEmpty()
+        data.path.isEmpty()
+        !data.ignoreExitValue
+
+    }
+
+    def "executableData windows renamed"() {
+
+        given:
+        mockWindows()
+
+        and:
+        packager = PackagerInternal.pnpm().workingDir(testProjectDir.resolve(".gradle/pnpm"))
+        packager.data.command = "pnpm3"
+        packager.setPlatformSpecific(nodeExtension.getPlatformSpecific())
+        packager.setOnSystemPath(true)
+
+        when:
+        def data = packager.executableData(["-version"])
+
+        then:
+        data.executable == "pnpm3"
         data.args == ["-version"]
         data.workingDir == null
         data.environmentVariables.isEmpty()
@@ -788,23 +812,50 @@ class PackagerInternalTest extends AbstractProjectTest {
 
     }
 
-    def "executableData nodeManager notOnSystem"() {
+    def "executableData linux nodeManager notOnSystem"() {
 
         given:
-        mockWindows()
+        mockLinux()
 
         and:
         nodeExtension.setDownload(false)
-        nodeExtension.getNodeManager()afterEvaluate(project, nodeExtension)
+        nodeExtension.getNodeManager().afterEvaluate(project, nodeExtension)
 
         and:
         packager = PackagerInternal.npm(nodeExtension.getNodeManager())
+        packager.setPlatformSpecific(nodeExtension.getPlatformSpecific())
 
         when:
         def data = packager.executableData(["-version"])
 
         then:
         data.executable == "npm"
+        data.args == ["-version"]
+        data.workingDir == null
+        data.environmentVariables.isEmpty()
+        data.path.isEmpty()
+        !data.ignoreExitValue
+
+    }
+
+    def "executableData windows nodeManager notOnSystem"() {
+
+        given:
+        mockWindows()
+
+        and:
+        nodeExtension.setDownload(false)
+        nodeExtension.getNodeManager().afterEvaluate(project, nodeExtension)
+
+        and:
+        packager = PackagerInternal.npm(nodeExtension.getNodeManager())
+        packager.setPlatformSpecific(nodeExtension.getPlatformSpecific())
+
+        when:
+        def data = packager.executableData(["-version"])
+
+        then:
+        data.executable == "npm.cmd"
         data.args == ["-version"]
         data.workingDir == null
         data.environmentVariables.isEmpty()
@@ -820,7 +871,7 @@ class PackagerInternalTest extends AbstractProjectTest {
 
         and:
         nodeExtension.setDownload(true)
-        nodeExtension.nodeManager.afterEvaluate(project, nodeExtension)
+        nodeExtension.getNodeManager().afterEvaluate(project, nodeExtension)
 
         and:
         packager = new PackagerInternal("yarn", new PackagerData()

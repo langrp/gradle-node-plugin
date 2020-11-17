@@ -48,12 +48,12 @@ import java.util.Set;
 public class PackagerInternal extends AbstractExecutable {
 
 	public static PackagerInternal npm() {
-		return new PackagerInternal("npm", npmData());
+		return new PackagerInternal("npm", "npx", npmData());
 	}
 
 	public static PackagerInternal npm(NodeManager nodeManager) {
 		Objects.requireNonNull(nodeManager, "Missing NodeManager");
-		return new PackagerInternal("npm", npmData(), nodeManager);
+		return new PackagerInternal("npm", "npx", npmData(), nodeManager);
 	}
 
 	private static PackagerData npmData() {
@@ -72,7 +72,7 @@ public class PackagerInternal extends AbstractExecutable {
 	}
 
 	public static PackagerInternal pnpm() {
-		return new PackagerInternal("pnpm", new PackagerData()
+		return new PackagerInternal("pnpm", "pnpx", new PackagerData()
 				.setCommand("pnpm")
 				.setNpmPackage("pnpm")
 				.setLocalScript("bin/pnpm.js")
@@ -104,7 +104,7 @@ public class PackagerInternal extends AbstractExecutable {
 	}
 
 	public static PackagerInternal custom() {
-		return new PackagerInternal("custom", new PackagerData()
+		return new PackagerInternal("custom", "customCli", new PackagerData()
 				.setCommand("custom")
 				.setNpmPackage("custom"));
 	}
@@ -119,15 +119,27 @@ public class PackagerInternal extends AbstractExecutable {
 	private final ValueHolder<String> setupTaskName = ValueHolder.racy(this::computeSetupTaskName);
 	/** Packager cli executor - must be lazy loaded to properly wait for configuration */
 	private final ValueHolder<PackagerCliInternal> cli = ValueHolder.racy(this::createCli);
+	/** Cli name used to lazily create cli executable */
+	@Nullable private final String cliName;
 
 
 	private PackagerInternal(String name, PackagerData data) {
+		this(name, null, data);
+	}
+
+	private PackagerInternal(String name, @Nullable String cliName, PackagerData data) {
 		super(name);
+		this.cliName = cliName;
 		this.data = data;
 	}
 
 	private PackagerInternal(String name, PackagerData data, NodeManager nodeManager) {
+		this(name, null, data, nodeManager);
+	}
+
+	private PackagerInternal(String name, @Nullable String cliName, PackagerData data, NodeManager nodeManager) {
 		super(name, nodeManager);
+		this.cliName = cliName;
 		this.data = data;
 	}
 
@@ -324,7 +336,8 @@ public class PackagerInternal extends AbstractExecutable {
 	@Nullable
 	private PackagerCliInternal createCli() {
 		return data.getCli()
-				.map(d -> new PackagerCliInternal(d, this))
+				.map(d -> new PackagerCliInternal(
+						Objects.requireNonNull(cliName, "Package cli name is missing"), d, this))
 				.orElse(null);
 	}
 

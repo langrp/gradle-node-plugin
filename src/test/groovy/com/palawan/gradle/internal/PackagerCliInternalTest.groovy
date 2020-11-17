@@ -51,7 +51,7 @@ class PackagerCliInternalTest extends AbstractProjectTest {
         mockLinux()
 
         and:
-        cli = new PackagerCliInternal(new PackagerCliData().setCommand("npx").setLocalScript("npx-cli.js"), parent)
+        cli = new PackagerCliInternal("npx", new PackagerCliData().setCommand("npx").setLocalScript("npx-cli.js"), parent)
 
         when:
         def command = cli.getCommand()
@@ -67,7 +67,7 @@ class PackagerCliInternalTest extends AbstractProjectTest {
     def "getScriptFile no manager"() {
 
         given:
-        cli = new PackagerCliInternal(new PackagerCliData(), PackagerInternal.pnpm())
+        cli = new PackagerCliInternal("pnpx", new PackagerCliData(), PackagerInternal.pnpm())
 
         when:
         cli.getScriptFile()
@@ -84,7 +84,7 @@ class PackagerCliInternalTest extends AbstractProjectTest {
 
         and:
         parent.setPlatformSpecific(nodeExtension.getPlatformSpecific())
-        cli = new PackagerCliInternal(new PackagerCliData().setCommand("npx").setLocalScript("npx-cli.js"), parent)
+        cli = new PackagerCliInternal("npx", new PackagerCliData().setCommand("npx").setLocalScript("npx-cli.js"), parent)
 
         when:
         def bin = cli.getExecutableBinDir()
@@ -101,7 +101,7 @@ class PackagerCliInternalTest extends AbstractProjectTest {
 
         and:
         parent.setPlatformSpecific(nodeExtension.getPlatformSpecific())
-        cli = new PackagerCliInternal(new PackagerCliData().setCommand("npx").setLocalScript("npx-cli.js"), parent)
+        cli = new PackagerCliInternal("npx", new PackagerCliData().setCommand("npx").setLocalScript("npx-cli.js"), parent)
 
         when:
         def bin = cli.getExecutableBinDir()
@@ -111,16 +111,42 @@ class PackagerCliInternalTest extends AbstractProjectTest {
 
     }
 
-    def "executableData"() {
+    def "executableData linux"() {
 
         given:
-        cli = new PackagerCliInternal(new PackagerCliData().setCommand("pnpx").setLocalScript("pnpx.js"), parent)
+        mockLinux()
+
+        and:
+        parent.setPlatformSpecific(nodeExtension.getPlatformSpecific())
+        cli = new PackagerCliInternal("pnpx", new PackagerCliData().setCommand("pnpx").setLocalScript("pnpx.js"), parent)
 
         when:
         def data = cli.executableData(["--version"])
 
         then:
         data.executable == "pnpx"
+        data.args == ["--version"]
+        data.workingDir == null
+        data.environmentVariables.isEmpty()
+        data.path.isEmpty()
+        !data.ignoreExitValue
+
+    }
+
+    def "executableData windows"() {
+
+        given:
+        mockWindows()
+
+        and:
+        parent.setPlatformSpecific(nodeExtension.getPlatformSpecific())
+        cli = new PackagerCliInternal("pnpx", new PackagerCliData().setCommand("pnpx").setLocalScript("pnpx.js"), parent)
+
+        when:
+        def data = cli.executableData(["--version"])
+
+        then:
+        data.executable == "pnpx.cmd"
         data.args == ["--version"]
         data.workingDir == null
         data.environmentVariables.isEmpty()

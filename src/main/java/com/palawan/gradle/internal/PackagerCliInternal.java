@@ -40,8 +40,8 @@ public class PackagerCliInternal extends AbstractExecutable {
 
 	private final PackagerCliData data;
 
-	PackagerCliInternal(PackagerCliData data, PackagerInternal parent) {
-		super(data.getCommand(), parent);
+	PackagerCliInternal(String name, PackagerCliData data, PackagerInternal parent) {
+		super(name, parent);
 		this.data = data;
 	}
 

@@ -141,7 +141,7 @@ class DownloadNodeFuncTest extends AbstractFuncTest {
         result1.output =~ "6.13.7"
 
         when:
-        def result2 = run("npxVersion", "--stacktrace")
+        def result2 = run("npxVersion")
 
         then:
         result2.task(":nodeSetup").outcome == TaskOutcome.UP_TO_DATE

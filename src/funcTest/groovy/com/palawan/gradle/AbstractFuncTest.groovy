@@ -72,6 +72,7 @@ abstract class AbstractFuncTest extends Specification {
 	}
 
 	private GradleRunner runner(String[] args) {
+		args = args + ["--stacktrace"]
 		return prepareRunner(GradleRunner.create()
 				.withProjectDir(testProjectDir.toFile())
 				.withArguments(args)

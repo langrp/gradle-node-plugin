@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2020 Petr Langr
+ * Copyright (c) 2022 Petr Langr
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -116,7 +116,7 @@ class DownloadNodeFuncTest extends AbstractFuncTest {
                 workingDir = file("build/nodejs")
 
                 npm {
-                    version = "6.13.7"
+                    version = System.properties["npm_version"] ? System.properties["npm_version"] : "6.13.7"
                     workingDir = file("build/npm")
                 }
             }
@@ -149,7 +149,14 @@ class DownloadNodeFuncTest extends AbstractFuncTest {
         result2.task(":npxVersion").outcome == TaskOutcome.SUCCESS
         result2.output =~ "6.13.7"
 
-        //TODO change parameters for download
+        when:
+        def result3 = run("npmVersion", "-Dnpm_version=6.14.15")
+
+        then:
+        result3.task(":nodeSetup").outcome == TaskOutcome.UP_TO_DATE
+        result3.task(":npmSetup").outcome == TaskOutcome.SUCCESS
+        result3.task(":npmVersion").outcome == TaskOutcome.SUCCESS
+        result3.output =~ "6.14.15"
 
     }
 

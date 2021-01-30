@@ -1,0 +1,26 @@
+
+plugins {
+	id 'com.palawanframe.node'
+}
+
+node {
+	download = true
+	workingDir = parent.file(".gradle/nodejs")
+}
+
+task init(type: NpmTask) {
+	outputs.file("package.json")
+	command = "init"
+	args = ["-y"]
+}
+
+nodeInstall {
+	dependsOn("init")
+	command = "install" // default value
+	args = ["express", "--save"]
+}
+
+task run(type: NodeTask) {
+	dependsOn("nodeInstall")
+	args = ["index.js"]
+}

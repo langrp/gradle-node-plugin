@@ -5,6 +5,11 @@ build/
 !**/src/main/**
 !**/src/test/**
 
+### Examples ###
+examples/gradle
+examples/gradlew
+examples/gradlew.bat
+
 ### STS ###
 .apt_generated
 .classpath

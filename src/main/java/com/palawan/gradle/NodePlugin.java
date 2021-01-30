@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2020 Petr Langr
+ * Copyright (c) 2022 Petr Langr
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -57,8 +57,8 @@ public class NodePlugin implements Plugin<Project> {
 	public static final String NODE_INSTALL_TASK_DESC = "Install node packages using chosen packager";
 
 	/** Latest LTS version used if no other defined */
-	public static final String LTS_VERSION = "12.16.3";
-	public static final String LTS_NPM_VERSION = "6.14.4";
+	public static final String LTS_VERSION = "16.13.2";
+	public static final String LTS_NPM_VERSION = "8.1.2";
 
 	@Override
 	public void apply(Project project) {

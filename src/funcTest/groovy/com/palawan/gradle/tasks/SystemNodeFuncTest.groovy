@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2020 Petr Langr
+ * Copyright (c) 2022 Petr Langr
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,6 +34,7 @@ import spock.lang.Stepwise
 
 import java.nio.file.Files
 import java.nio.file.Path
+import java.nio.file.Paths
 import java.util.zip.GZIPInputStream
 import java.util.zip.ZipInputStream
 
@@ -55,9 +56,11 @@ class SystemNodeFuncTest extends AbstractFuncTest {
 	static Path nodeJsDir
 
 	def setupSpec() {
-		nodeJsDir = Files.createTempDirectory("junit-nodejs")
-		nodeJsDir = downloadNode("v${NodePlugin.LTS_VERSION}")
-		defineExecutable()
+		if (!hasSystemNode()) {
+			nodeJsDir = Files.createTempDirectory("junit-nodejs")
+			nodeJsDir = downloadNode("v${NodePlugin.LTS_VERSION}")
+			defineExecutable()
+		}
 	}
 
 	def cleanupSpec() {
@@ -132,7 +135,7 @@ class SystemNodeFuncTest extends AbstractFuncTest {
 		then:
 		result2.task(":${NodePlugin.NODE_SETUP_TASK_NAME}") == null // did not run
 		result2.task(":npmHelp").outcome == TaskOutcome.SUCCESS
-		result2.output =~ /\nUsage: npm <command>\n/
+		result2.output =~ /npm <command> -h/
 
 		when:
 		def result3 = run('npxHelp')
@@ -140,7 +143,7 @@ class SystemNodeFuncTest extends AbstractFuncTest {
 		then:
 		result3.task(":${NodePlugin.NODE_SETUP_TASK_NAME}") == null // did not run
 		result3.task(":npxHelp").outcome == TaskOutcome.SUCCESS
-		result3.output =~ /Execute binaries from npm packages/
+		result3.output =~ /Run a command from a local or remote npm package/
 
 		when:
 		def result4 = run("helloWorld")
@@ -160,7 +163,7 @@ class SystemNodeFuncTest extends AbstractFuncTest {
 
 		then:
 		result6.task(":helloWorld").outcome == TaskOutcome.SUCCESS
-		result6.output =~ /${testProjectDir.toString()}/
+		result6.output.contains(tempFile(testProjectDir.toString()))
 
 	}
 
@@ -179,7 +182,7 @@ class SystemNodeFuncTest extends AbstractFuncTest {
 		and:
 		buildScript("""
 
-			def nodeHomeVar = System.properties["nodeHome"] ? System.properties["nodeHome"] : "${nodeJsDir.toString()}"
+			def nodeHomeVar = System.properties['nodeHome'] ? System.properties["nodeHome"] : '${escape(nodeJsDir)}'
 
 			task failure(type: NodeTask) {
 				ignoreExitValue = true
@@ -199,7 +202,7 @@ class SystemNodeFuncTest extends AbstractFuncTest {
 
 		then:
 		result1.task(":failure").outcome == TaskOutcome.SUCCESS
-		tempFile(result1.output) =~ /Error: Cannot find module '${testProjectDir.resolve("unknown.js")}'/
+		tempFile(result1.output) =~ /Error: Cannot find module '${tempFile(escape(testProjectDir.resolve('unknown.js')))}'/
 
 		when:
 		def result2 = run("failure")
@@ -212,7 +215,7 @@ class SystemNodeFuncTest extends AbstractFuncTest {
 
 		then:
 		result3.task(":nodeHome").outcome == TaskOutcome.SUCCESS
-		result3.output =~ "NODE_HOME=${nodeJsDir.toString()}"
+		result3.output =~ /NODE_HOME=${escape(nodeJsDir)}/
 
 		when:
 		def result4 = run("nodeHome")
@@ -317,7 +320,7 @@ class SystemNodeFuncTest extends AbstractFuncTest {
 
 		then:
 		result1.task(":printSubProjectDir").outcome == TaskOutcome.SUCCESS
-		result1.output =~ testProjectDir.resolve("subproject").toString()
+		result1.output =~ tempFile(escape(testProjectDir.resolve("subproject")))
 
 		when:
 		def result2 = run("printSubProjectDir")
@@ -330,7 +333,7 @@ class SystemNodeFuncTest extends AbstractFuncTest {
 
 		then:
 		result3.task(":printSubWorkingDir").outcome == TaskOutcome.SUCCESS
-		result3.output =~ testProjectDir.resolve("subproject").toString()
+		result3.output =~ tempFile(escape(testProjectDir.resolve("subproject")))
 
 		when:
 		def result4 = run("printSubWorkingDir")
@@ -361,7 +364,7 @@ class SystemNodeFuncTest extends AbstractFuncTest {
 
 		then:
 		result8.task(":printMainProjectDir").outcome == TaskOutcome.SUCCESS
-		result8.output =~ testProjectDir.toString()
+		result8.output =~ tempFile(escape(testProjectDir))
 
 		when:
 		def result9 = runAndFail("nodeTest")
@@ -578,7 +581,7 @@ class SystemNodeFuncTest extends AbstractFuncTest {
 
 		then:
 		result2.task(":npmHelp").outcome == TaskOutcome.SUCCESS
-		result2.output =~ /\nUsage: npm <command>\n/
+		result2.output =~ /npm <command> -h/
 
 	}
 
@@ -610,7 +613,7 @@ class SystemNodeFuncTest extends AbstractFuncTest {
 
 		then:
 		result2.task(":npmHelp").outcome == TaskOutcome.SUCCESS
-		result2.output =~ /\nUsage: npm <command>\n/
+		result2.output =~ /npm <command> -h/
 
 	}
 
@@ -638,7 +641,18 @@ class SystemNodeFuncTest extends AbstractFuncTest {
 
 	@Override
 	protected GradleRunner prepareRunner(GradleRunner runner) {
-		runner.withNode(nodeJsDir, platformSpecific)
+		nodeJsDir == null ? runner : runner.withNode(nodeJsDir, platformSpecific)
+	}
+
+	def hasSystemNode() {
+		String pathName = System.getenv().containsKey("Path") ? "Path" : "PATH"
+		String nodeExec = platformSpecific.getExecutable("node")
+		Arrays.stream(System.getenv(pathName).split(File.pathSeparator))
+			.map{ Paths.get(it) }
+			.filter { Files.exists(it) }
+			.flatMap { Files.list(it) }
+			.map { it.fileName.toString() }
+			.anyMatch { it == nodeExec }
 	}
 
 	def getAddress(String version) {
@@ -671,7 +685,8 @@ class SystemNodeFuncTest extends AbstractFuncTest {
 			}
 		}
 
-		Files.list(nodeJsDir).findFirst().orElseThrow{ new IllegalStateException("No nodejs") }
+		def dir = Files.list(nodeJsDir).findFirst().orElseThrow{ new IllegalStateException("No nodejs") }
+		Paths.get(tempFile(dir.toString()))
 	}
 
 	def defineExecutable() {

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2020 Petr Langr
+ * Copyright (c) 2022 Petr Langr
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,6 +26,8 @@
 package com.palawan.gradle.dsl
 
 import com.palawan.gradle.AbstractProjectTest
+import com.palawan.gradle.NodePlugin
+
 /**
  *
  * @author petr.langr
@@ -53,7 +55,7 @@ class NodeExtensionTest extends AbstractProjectTest {
         node.getPackagerManager() != null
         !node.getDownload()
         node.getCommand() == "node"
-        node.getVersion() == "12.16.3"
+        node.getVersion() == NodePlugin.LTS_VERSION
         isSameFile(node.getWorkingDir(), testProjectDir.resolve(".gradle/nodejs"))
         node.getUrl() == "https://nodejs.org/dist"
 

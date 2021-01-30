@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2020 Petr Langr
+ * Copyright (c) 2022 Petr Langr
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,6 +26,7 @@
 package com.palawan.gradle.internal
 
 import com.palawan.gradle.AbstractProjectTest
+import com.palawan.gradle.NodePlugin
 import com.palawan.gradle.internal.data.PackagerCliData
 
 import java.nio.file.Paths
@@ -60,7 +61,7 @@ class PackagerCliInternalTest extends AbstractProjectTest {
         then:
         cli.name == "npx"
         command == "npx"
-        isSameFile(script.get(), testProjectDir.resolve(".gradle/nodejs/node-v12.16.3-linux-x64/lib/node_modules/npm/npx-cli.js"))
+        isSameFile(script.get(), testProjectDir.resolve(".gradle/nodejs/node-v${NodePlugin.LTS_VERSION}-linux-x64/lib/node_modules/npm/npx-cli.js"))
 
     }
 

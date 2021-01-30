@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Petr Langr
+ * Copyright (c) 2022 Petr Langr
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,7 +35,6 @@ apply( from = "gradle/publishing.gradle.kts" )
 apply( from = "gradle/functional-tests.gradle.kts" )
 
 repositories {
-	mavenLocal()
     mavenCentral()
 	gradlePluginPortal()
 }
@@ -82,9 +81,8 @@ dependencies {
 	implementation(localGroovy())
 
 	testImplementation(gradleTestKit())
-	testImplementation("org.spockframework:spock-core:1.3-groovy-2.5") {
-		exclude(group= "org.codehaus.groovy")
-	}
+	testImplementation(platform("org.spockframework:spock-bom:2.0-groovy-3.0"))
+	testImplementation("org.spockframework:spock-core")
 }
 
 tasks.withType<JacocoCoverageVerification> {
@@ -96,6 +94,7 @@ tasks.withType<JacocoCoverageVerification> {
 }
 
 tasks.withType<Test> {
+	useJUnitPlatform()
 	testLogging {
 		events = setOf(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
 		showCauses = true

@@ -32,7 +32,7 @@ configure<SourceSetContainer> {
 		val groovy = (groovySource as DefaultGroovySourceSet).groovy
 		groovy.srcDir("src/funcTest/groovy")
 		resources.srcDir("src/funcTest/resources")
-		compileClasspath += main.output + configurations["testRuntime"]
+		compileClasspath += main.output + configurations["testRuntimeClasspath"]
 		runtimeClasspath += output + compileClasspath
 	}
 }
@@ -64,6 +64,7 @@ val jacocoTestReport = project.tasks.named<JacocoReport>("jacocoTestReport") {
 }
 
 val mainSources = the<SourceSetContainer>()["main"]
+val coverage = if (System.getProperty("os.name").contains("Windows")) "0.94" else "0.96"
 val jacocoTestCoverageVerification = project.tasks.named<JacocoCoverageVerification>("jacocoTestCoverageVerification") {
 	mustRunAfter(jacocoTestReport)
 	executionData(functionalTest)
@@ -73,7 +74,7 @@ val jacocoTestCoverageVerification = project.tasks.named<JacocoCoverageVerificat
 			limit {
 				counter = "LINE"
 				value = "COVEREDRATIO"
-				minimum = java.math.BigDecimal("0.96")
+				minimum = java.math.BigDecimal(coverage)
 			}
 		}
 	}

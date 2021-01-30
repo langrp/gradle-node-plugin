@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2020 Petr Langr
+ * Copyright (c) 2022 Petr Langr
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -36,7 +36,7 @@ import java.io.File;
 import java.nio.file.Path;
 
 /**
- * Noe plugin extension
+ * Node plugin extension
  *
  * @author petr.langr
  * @since 1.0.0

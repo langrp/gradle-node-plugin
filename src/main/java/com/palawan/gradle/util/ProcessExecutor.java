@@ -23,43 +23,44 @@
  *
  */
 
-package com.palawan.gradle.internal.data;
+package com.palawan.gradle.util;
 
-import com.palawan.gradle.dsl.PackagerCli;
-
-import javax.annotation.Nullable;
-import java.util.Optional;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author petr.langr
  * @since 1.0.0
  */
-public class PackagerCliData  implements PackagerCli {
+public interface ProcessExecutor {
 
-	private String command;
-	@Nullable
-	private String localScript;
-
-	@Override
-	public PackagerCliData setCommand(String command) {
-		this.command = command;
-		return this;
+	static ProcessExecutor getInstance() {
+		return DefaultProcessExecutor.INSTANCE;
 	}
 
-	@Override
-	public String getCommand() {
-		return command;
-	}
+	String execute(String... command) throws IOException, InterruptedException;
+
+}
+
+class DefaultProcessExecutor implements ProcessExecutor {
+
+	static final DefaultProcessExecutor INSTANCE = new DefaultProcessExecutor();
 
 	@Override
-	public PackagerCliData setLocalScript(String localScript) {
-		this.localScript = localScript;
-		return this;
-	}
+	public String execute(String... command) throws IOException, InterruptedException {
+		Process process = new ProcessBuilder()
+				.command(command)
+				.redirectInput(ProcessBuilder.Redirect.PIPE)
+				.redirectError(ProcessBuilder.Redirect.PIPE)
+				.start();
+		process.waitFor(60L, TimeUnit.SECONDS);
 
-	@Override
-	public Optional<String> getLocalScript() {
-		return Optional.ofNullable(localScript);
+		try (InputStream is = process.getInputStream()) {
+			return new BufferedReader(new InputStreamReader(is)).readLine().trim();
+		}
 	}
 
 }

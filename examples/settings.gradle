@@ -1,5 +1,6 @@
 
 include 'sample-app'
+include 'hello-world-npm'
 
 includeBuild '..'
 

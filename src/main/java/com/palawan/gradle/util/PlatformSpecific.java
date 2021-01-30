@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2020 Petr Langr
+ * Copyright (c) 2022 Petr Langr
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -55,10 +55,11 @@ public interface PlatformSpecific {
 	 * Custom platform specific utility using defined properties. This method
 	 * is used only in unit test cases.
 	 * @param properties System properties
+	 * @param processExecutor System process executor
 	 * @return New instance of platform specifics using given properties
 	 */
-	static PlatformSpecific getInstance(Properties properties) {
-		return new DefaultPlatformSpecific(properties);
+	static PlatformSpecific getInstance(Properties properties, ProcessExecutor processExecutor) {
+		return new DefaultPlatformSpecific(properties, processExecutor);
 	}
 
 	/**
@@ -115,32 +116,22 @@ public interface PlatformSpecific {
 		return isWindows() ? workingDir : workingDir.resolve("bin");
 	}
 
-	static String execute(String... command) throws IOException, InterruptedException {
-		Process process = new ProcessBuilder()
-				.command(command)
-				.redirectInput(ProcessBuilder.Redirect.PIPE)
-				.redirectError(ProcessBuilder.Redirect.PIPE)
-				.start();
-		process.waitFor(60L, TimeUnit.SECONDS);
-
-		try (InputStream is = process.getInputStream()) {
-			return new BufferedReader(new InputStreamReader(is)).readLine().trim();
-		}
-	}
-
 }
 
 class DefaultPlatformSpecific implements PlatformSpecific {
 
-	static final DefaultPlatformSpecific INSTANCE = new DefaultPlatformSpecific(System.getProperties());
+	static final DefaultPlatformSpecific INSTANCE = new DefaultPlatformSpecific(
+			System.getProperties(), ProcessExecutor.getInstance());
 
 	private final ValueHolder<String> osName = ValueHolder.racy(this::osName);
 	private final ValueHolder<String> osArch = ValueHolder.racy(this::osArch);
 
 	private final Properties properties;
+	private final ProcessExecutor processExecutor;
 
-	public DefaultPlatformSpecific(Properties properties) {
+	public DefaultPlatformSpecific(Properties properties, ProcessExecutor processExecutor) {
 		this.properties = properties;
+		this.processExecutor = processExecutor;
 	}
 
 	@Override
@@ -168,7 +159,7 @@ class DefaultPlatformSpecific implements PlatformSpecific {
 
 		try {
 			if (name.equals("arm") || name.startsWith("aarch")) {
-				String arch = PlatformSpecific.execute("uname", "-m");
+				String arch = processExecutor.execute("uname", "-m");
 				return "armv8l".equals(arch) ? "arm64" : arch;
 			} else if (name.contains("64")) {
 				return "x64";

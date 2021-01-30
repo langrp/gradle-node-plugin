@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2020 Petr Langr
+ * Copyright (c) 2022 Petr Langr
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -121,7 +121,7 @@ class NodeManagerTest extends AbstractProjectTest {
         def data = nodeManager.executableData(["/tmp/junit/npm-cli.js"])
 
         then:
-        isSameFile(data.executable, testProjectDir.resolve(".gradle/nodejs/node-v12.16.3-linux-x64/bin/node"))
+        isSameFile(data.executable, testProjectDir.resolve(".gradle/nodejs/node-v${NodePlugin.LTS_VERSION}-linux-x64/bin/node"))
         data.args == ["/tmp/junit/npm-cli.js"]
 
     }
@@ -141,7 +141,7 @@ class NodeManagerTest extends AbstractProjectTest {
         def data = nodeManager.executableData(["/tmp/junit/npm-cli.js"])
 
         then:
-        isSameFile(data.executable, testProjectDir.resolve(".gradle/nodejs/node-v12.16.3-win-x64/node.exe"))
+        isSameFile(data.executable, testProjectDir.resolve(".gradle/nodejs/node-v${NodePlugin.LTS_VERSION}-win-x64/node.exe"))
         data.args == ["/tmp/junit/npm-cli.js"]
 
     }
@@ -179,7 +179,7 @@ class NodeManagerTest extends AbstractProjectTest {
         def data = nodeManager.executableData(["/tmp/junit/npm-cli.js"])
 
         then:
-        isSameFile(data.executable, testProjectDir.resolve(".gradle/nodejs/node-v12.16.3-linux-x64/bin/nodejs"))
+        isSameFile(data.executable, testProjectDir.resolve(".gradle/nodejs/node-v${NodePlugin.LTS_VERSION}-linux-x64/bin/nodejs"))
         data.args == ["/tmp/junit/npm-cli.js"]
 
     }
@@ -191,7 +191,7 @@ class NodeManagerTest extends AbstractProjectTest {
 
         then:
         data.getCommand() == "node"
-        data.getVersion() == "12.16.3"
+        data.getVersion() == NodePlugin.LTS_VERSION
         isSameFile(data.getWorkingDir(), testProjectDir.resolve(".gradle/nodejs"))
         data.getUrl() == "https://nodejs.org/dist"
 
@@ -235,7 +235,7 @@ class NodeManagerTest extends AbstractProjectTest {
         def bin = nodeManager.getBinDir()
 
         then:
-        isSameFile(bin, testProjectDir.resolve(".gradle/nodejs/node-v12.16.3-linux-x64/bin"))
+        isSameFile(bin, testProjectDir.resolve(".gradle/nodejs/node-v${NodePlugin.LTS_VERSION}-linux-x64/bin"))
 
     }
 
@@ -248,7 +248,7 @@ class NodeManagerTest extends AbstractProjectTest {
         def bin = nodeManager.getBinDir()
 
         then:
-        isSameFile(bin, testProjectDir.resolve(".gradle/nodejs/node-v12.16.3-win-x64"))
+        isSameFile(bin, testProjectDir.resolve(".gradle/nodejs/node-v${NodePlugin.LTS_VERSION}-win-x64"))
 
     }
 
@@ -261,7 +261,7 @@ class NodeManagerTest extends AbstractProjectTest {
         def npm = nodeManager.getPackagerWorkingDir()
 
         then:
-        isSameFile(npm, testProjectDir.resolve(".gradle/nodejs/node-v12.16.3-linux-x64/lib/node_modules/npm"))
+        isSameFile(npm, testProjectDir.resolve(".gradle/nodejs/node-v${NodePlugin.LTS_VERSION}-linux-x64/lib/node_modules/npm"))
 
     }
 
@@ -274,7 +274,7 @@ class NodeManagerTest extends AbstractProjectTest {
         def npm = nodeManager.getPackagerWorkingDir()
 
         then:
-        isSameFile(npm, testProjectDir.resolve(".gradle/nodejs/node-v12.16.3-win-x64/node_modules/npm"))
+        isSameFile(npm, testProjectDir.resolve(".gradle/nodejs/node-v${NodePlugin.LTS_VERSION}-win-x64/node_modules/npm"))
 
     }
 

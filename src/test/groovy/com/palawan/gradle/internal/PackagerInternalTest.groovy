@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2020 Petr Langr
+ * Copyright (c) 2022 Petr Langr
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -445,7 +445,7 @@ class PackagerInternalTest extends AbstractProjectTest {
         def script = packager.getScriptFile()
 
         then:
-        isSameFile(script.get(), testProjectDir.resolve(".gradle/nodejs/node-v12.16.3-linux-x64/lib/node_modules/npm/bin/npm-cli.js"))
+        isSameFile(script.get(), testProjectDir.resolve(".gradle/nodejs/node-v${NodePlugin.LTS_VERSION}-linux-x64/lib/node_modules/npm/bin/npm-cli.js"))
 
     }
 
@@ -461,7 +461,7 @@ class PackagerInternalTest extends AbstractProjectTest {
         def script = packager.getScriptFile()
 
         then:
-        isSameFile(script.get(), testProjectDir.resolve(".gradle/nodejs/node-v12.16.3-win-x64/node_modules/npm/bin/npm-cli.js"))
+        isSameFile(script.get(), testProjectDir.resolve(".gradle/nodejs/node-v${NodePlugin.LTS_VERSION}-win-x64/node_modules/npm/bin/npm-cli.js"))
 
     }
 
@@ -777,8 +777,8 @@ class PackagerInternalTest extends AbstractProjectTest {
         def data = packager.executableData(["-version"])
 
         then:
-        isSameFile(data.executable, testProjectDir.resolve(".gradle/nodejs/node-v12.16.3-linux-x64/bin/node"))
-        isSameFile(data.args[0], testProjectDir.resolve(".gradle/nodejs/node-v12.16.3-linux-x64/lib/node_modules/npm/bin/npm-cli.js"))
+        isSameFile(data.executable, testProjectDir.resolve(".gradle/nodejs/node-v${NodePlugin.LTS_VERSION}-linux-x64/bin/node"))
+        isSameFile(data.args[0], testProjectDir.resolve(".gradle/nodejs/node-v${NodePlugin.LTS_VERSION}-linux-x64/lib/node_modules/npm/bin/npm-cli.js"))
         data.args[1] == '-version'
         data.workingDir == null
         data.environmentVariables.isEmpty()

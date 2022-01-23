@@ -26,7 +26,7 @@ plugins {
 	id("groovy")
 	id("java-gradle-plugin")
 	id("idea")
-	id("com.gradle.plugin-publish") version "0.10.1"
+	id("com.gradle.plugin-publish") version "0.20.0"
 	id("pl.droidsonroids.jacoco.testkit") version "1.0.7"
 	id("signing")
 }

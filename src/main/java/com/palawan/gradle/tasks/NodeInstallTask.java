@@ -26,9 +26,11 @@
 package com.palawan.gradle.tasks;
 
 import com.palawan.gradle.internal.ExecutableData;
-import com.palawan.gradle.internal.PackagerInternal;
-import com.palawan.gradle.util.ValueHolder;
-import org.gradle.api.tasks.*;
+import org.gradle.api.tasks.InputFiles;
+import org.gradle.api.tasks.OutputDirectories;
+import org.gradle.api.tasks.OutputFiles;
+import org.gradle.api.tasks.PathSensitive;
+import org.gradle.api.tasks.PathSensitivity;
 
 import java.util.Collection;
 import java.util.List;
@@ -38,8 +40,6 @@ import java.util.List;
  * @since 1.0.0
  */
 public class NodeInstallTask extends CommandExecutionTask {
-
-	private final ValueHolder<PackagerInternal> packager = ValueHolder.racy(this::getPackager);
 
 	public NodeInstallTask() {
 		setCommand("install");
@@ -64,13 +64,6 @@ public class NodeInstallTask extends CommandExecutionTask {
 	@OutputDirectories
 	public Collection<String> getOutputDirectories() {
 		return packager.get().getOutputDirectories();
-	}
-
-	private PackagerInternal getPackager() {
-		return getNodeExtension()
-				.getPackagerManager()
-				.getPackager()
-				.orElseGet(() -> getNodeExtension().getNodeManager().getPackager());
 	}
 
 }

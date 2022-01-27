@@ -56,7 +56,7 @@ class PackagerDataTest extends Specification {
         data.command == "npm"
         data.version.get() == "6.14.2"
         data.npmPackage == "npm"
-        data.workingDir == Paths.get("/tmp/junit")
+        data.workingDir == new File("/tmp/junit")
         data.localScript.get() == "bin/npm-cli.js"
         data.inputFiles == ["package.json", "package-lock.json"]
         data.outputDirectories == ["node_modules", ".npm"]
@@ -73,7 +73,7 @@ class PackagerDataTest extends Specification {
         data.cli { c -> c.setCommand("npx").setLocalScript("bin/npx-cli.js") }
 
         then:
-        data.workingDir == Paths.get("/tmp/junit")
+        data.workingDir == new File("/tmp/junit")
         data.getCli().isPresent()
         data.getCli().get().command == "npx"
         data.getCli().get().localScript.get() == "bin/npx-cli.js"

@@ -215,12 +215,7 @@ public class PackagerInternal extends AbstractExecutable {
 		getCli().ifPresent(c -> c.setPlatformSpecific(nodeExtension.getPlatformSpecific()));
 		if (nodeExtension.getDownload()) {
 			project.getTasks().withType(PackagerSetupTask.class, t -> t.dependsOn(NodePlugin.NODE_SETUP_TASK_NAME));
-			project.getTasks().withType(PackagerTask.class, t -> t.dependsOn(setupTaskName.get()));
 			project.getTasks().withType(NodeInstallTask.class, t -> t.dependsOn(setupTaskName.get()));
-
-			if (cli.get() != null) {
-				project.getTasks().withType(PackagerCliTask.class, t -> t.dependsOn(setupTaskName.get()));
-			}
 		}
 
 	}
@@ -235,10 +230,12 @@ public class PackagerInternal extends AbstractExecutable {
 		setPlatformSpecific(nodeExtension.getPlatformSpecific());
 		getCli().ifPresent(c -> c.setPlatformSpecific(nodeExtension.getPlatformSpecific()));
 		if (nodeExtension.getDownload()) {
+			project.getTasks().withType(PackagerTask.class, t -> t.dependsOn(setupTaskName.get()));
 			project.getTasks().withType(DefaultPackagerTask.class, t -> t.dependsOn(NodePlugin.NODE_SETUP_TASK_NAME));
 			project.getTasks().withType(NodeInstallTask.class, t -> t.dependsOn(NodePlugin.NODE_SETUP_TASK_NAME));
 
 			if (cli.get() != null) {
+				project.getTasks().withType(PackagerCliTask.class, t -> t.dependsOn(setupTaskName.get()));
 				project.getTasks().withType(DefaultPackagerCliTask.class, t -> t.dependsOn(NodePlugin.NODE_SETUP_TASK_NAME));
 			}
 		}
@@ -324,9 +321,9 @@ public class PackagerInternal extends AbstractExecutable {
 	}
 
 	private Path computeWorkingDir() {
-		Objects.requireNonNull(data.getWorkingDir(), "Missing working directory");
+		Path path = Objects.requireNonNull(data.getWorkingDirPath(), "Missing working directory");
 		String version = data.getVersion().map(v -> "-v" + v).orElse("-latest");
-		return data.getWorkingDir().resolve(name + version);
+		return path.resolve(name + version);
 	}
 
 	private String computeSetupTaskName() {

@@ -27,7 +27,6 @@ package com.palawan.gradle.tasks;
 
 import com.palawan.gradle.internal.ExecutableData;
 import com.palawan.gradle.internal.NodeException;
-import com.palawan.gradle.internal.PackagerInternal;
 
 import java.util.List;
 
@@ -39,10 +38,7 @@ public class PackagerCliTask extends CommandExecutionTask {
 
 	@Override
 	protected ExecutableData executableData(List<String> arguments) {
-		return getNodeExtension()
-				.getPackagerManager()
-				.getPackager()
-				.flatMap(PackagerInternal::getCli)
+		return packager.get().getCli()
 				.map(p -> p.executableData(arguments))
 				.orElseThrow(() -> new NodeException("No packager CLI available"));
 	}

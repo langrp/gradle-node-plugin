@@ -64,13 +64,6 @@ class NodeManagerTest extends AbstractProjectTest {
         versionTask.group == NodePlugin.NODE_GROUP
         versionTask.description == NodePlugin.NODE_TASK_DESC
 
-        when:
-        def setupTask = project.getTasks().named(NodePlugin.NODE_SETUP_TASK_NAME)
-
-        then:
-        setupTask.get().group == NodePlugin.NODE_GROUP
-        setupTask.get().description == NodePlugin.NODE_SETUP_TASK_DESC
-
     }
 
     def "AfterEvaluate"() {
@@ -88,6 +81,12 @@ class NodeManagerTest extends AbstractProjectTest {
         then:
         versionTask.getDependsOn().contains(NodePlugin.NODE_SETUP_TASK_NAME)
 
+        when:
+        def setupTask = project.getTasks().named(NodePlugin.NODE_SETUP_TASK_NAME)
+
+        then:
+        setupTask.get().group == NodePlugin.NODE_GROUP
+        setupTask.get().description == NodePlugin.NODE_SETUP_TASK_DESC
     }
 
     def "AfterEvaluate no download"() {

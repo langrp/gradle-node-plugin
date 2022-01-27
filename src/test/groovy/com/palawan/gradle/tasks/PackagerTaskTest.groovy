@@ -26,7 +26,7 @@
 package com.palawan.gradle.tasks
 
 import com.palawan.gradle.AbstractProjectTest
-import com.palawan.gradle.internal.NodeException
+import org.gradle.process.ExecSpec
 
 /**
  *
@@ -35,16 +35,40 @@ import com.palawan.gradle.internal.NodeException
  */
 class PackagerTaskTest extends AbstractProjectTest {
 
-    def "ExecutableData no packager"() {
+    def "ExecutableData uses configured packager"() {
 
         given:
+        ExecSpec spec = Mock()
         def task = project.tasks.create("packager", PackagerTask)
+        nodeExtension.npm {  }
+        nodeExtension.getPackagerManager().getPackager().get().afterEvaluate(project, nodeExtension)
 
         when:
-        task.executableData(List.of())
+        task.executableData(List.of("help")).execute(spec)
 
-        then:
-        thrown(NodeException)
+        then: "Would throw an NPE if package was not configured"
+        noExceptionThrown()
+        with(spec) {
+            1 * setArgs(["help"])
+        }
+
+    }
+
+    def "ExecutableData default packager"() {
+
+        given:
+        ExecSpec spec = Mock()
+        def task = project.tasks.create("packager", PackagerTask)
+        nodeExtension.getNodeManager().getPackager().afterEvaluate(project, nodeExtension)
+
+        when:
+        task.executableData(List.of("help")).execute(spec)
+
+        then: "Would throw an NPE if package was not configured"
+        noExceptionThrown()
+        with(spec) {
+            1 * setArgs(["help"])
+        }
 
     }
 

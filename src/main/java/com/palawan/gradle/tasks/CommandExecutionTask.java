@@ -26,6 +26,8 @@
 package com.palawan.gradle.tasks;
 
 import com.palawan.gradle.internal.ExecutableData;
+import com.palawan.gradle.internal.PackagerInternal;
+import com.palawan.gradle.util.ValueHolder;
 import org.gradle.api.tasks.Input;
 
 import java.util.ArrayList;
@@ -36,6 +38,9 @@ import java.util.List;
  * @since 1.0.0
  */
 abstract class CommandExecutionTask extends ExecutionTask {
+
+	/** Holds specific packager if any configured or default one */
+	protected final ValueHolder<PackagerInternal> packager = ValueHolder.racy(this::getPackager);
 
 	private String command;
 
@@ -87,5 +92,12 @@ abstract class CommandExecutionTask extends ExecutionTask {
 	 */
 	public void setArgs(List<String> args) {
 		this.args = args;
+	}
+
+	private PackagerInternal getPackager() {
+		return getNodeExtension()
+				.getPackagerManager()
+				.getPackager()
+				.orElseGet(() -> getNodeExtension().getNodeManager().getPackager());
 	}
 }

@@ -73,11 +73,6 @@ public class NodeManager {
 			t.setDescription(NodePlugin.NODE_TASK_DESC);
 		});
 
-		project.getTasks().register(NodePlugin.NODE_SETUP_TASK_NAME, NodeSetupTask.class, t -> {
-			t.setGroup(NodePlugin.NODE_GROUP);
-			t.setDescription(NodePlugin.NODE_SETUP_TASK_DESC);
-		});
-
 		packager.applyDefault(project);
 	}
 
@@ -89,6 +84,11 @@ public class NodeManager {
 	public void afterEvaluate(Project project, NodeExtension nodeExtension) {
 		onSystemPath = !nodeExtension.getDownload();
 		if (nodeExtension.getDownload()) {
+			project.getTasks().register(NodePlugin.NODE_SETUP_TASK_NAME, NodeSetupTask.class, t -> {
+				t.setGroup(NodePlugin.NODE_GROUP);
+				t.setDescription(NodePlugin.NODE_SETUP_TASK_DESC);
+			});
+
 			project.getTasks().withType(NodeTask.class, t -> t.dependsOn(NodePlugin.NODE_SETUP_TASK_NAME));
 		}
 

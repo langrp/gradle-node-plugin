@@ -80,7 +80,7 @@ class SystemNodeFuncTest extends AbstractFuncTest {
 		then:
 		result.task(":tasks").outcome == TaskOutcome.SUCCESS
 		result.output =~ /nodeInstall - Install node packages using chosen packager/
-		result.output =~ /nodeSetup - Prepares specific version of NodeJS/
+		!(result.output =~ /nodeSetup/)
 
 	}
 

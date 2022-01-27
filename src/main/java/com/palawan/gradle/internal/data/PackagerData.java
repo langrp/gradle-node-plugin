@@ -105,14 +105,18 @@ public class PackagerData implements CustomPackager {
 	 * @return workingDir
 	 */
 	@Override
-	public Path getWorkingDir() {
-		return workingDir;
+	public File getWorkingDir() {
+		return workingDir.toFile();
 	}
 
 	@Override
 	public PackagerData setWorkingDir(File workingDir) {
 		this.workingDir = workingDir.toPath();
 		return this;
+	}
+
+	public Path getWorkingDirPath() {
+		return workingDir;
 	}
 
 	public PackagerData setWorkingDir(Path workingDir) {

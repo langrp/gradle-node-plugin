@@ -99,6 +99,6 @@ public interface Packager {
 	 * Get packager base directory location
 	 * @return Packager base directory as {@link Path}
 	 */
-	Path getWorkingDir();
+	File getWorkingDir();
 
 }

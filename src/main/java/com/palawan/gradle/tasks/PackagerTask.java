@@ -26,7 +26,6 @@
 package com.palawan.gradle.tasks;
 
 import com.palawan.gradle.internal.ExecutableData;
-import com.palawan.gradle.internal.NodeException;
 
 import java.util.List;
 
@@ -38,11 +37,7 @@ public class PackagerTask extends CommandExecutionTask {
 
 	@Override
 	protected ExecutableData executableData(List<String> arguments) {
-		return getNodeExtension()
-				.getPackagerManager()
-				.getPackager()
-				.map(p -> p.executableData(arguments))
-				.orElseThrow(() -> new NodeException("No packager available"));
+		return packager.get().executableData(arguments);
 	}
 
 }

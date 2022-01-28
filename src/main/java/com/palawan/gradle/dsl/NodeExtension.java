@@ -127,10 +127,10 @@ public class NodeExtension implements PackagerManager {
 
 	/**
 	 * Get NodeJS base directory location
-	 * @return NodeJS base directory as {@link Path}
+	 * @return NodeJS base directory as {@link File}
 	 */
-	public Path getWorkingDir() {
-		return nodeManager.getData().getWorkingDir();
+	public File getWorkingDir() {
+		return nodeManager.getData().getWorkingDir().toFile();
 	}
 
 	/**

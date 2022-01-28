@@ -66,16 +66,6 @@ class PackagerInternalTest extends AbstractProjectTest {
         setupTask.get().group == NodePlugin.NODE_GROUP
         setupTask.get().description == "Prepares specific version of 'npm' packager."
 
-        when:
-        def npmTask = project.getTasks().create("npmVersion", PackagerTask.class)
-        def npxTask = project.getTasks().create("npxVersion", PackagerCliTask.class)
-
-        then:
-        npmTask.group == NodePlugin.NODE_GROUP
-        npxTask.group == NodePlugin.NODE_GROUP
-        npmTask.description == "Executes 'npm' command."
-        npxTask.description == "Executes cli using 'npx' command."
-
     }
 
     def "Apply yarn"() {
@@ -97,13 +87,6 @@ class PackagerInternalTest extends AbstractProjectTest {
         setupTask.get().group == NodePlugin.NODE_GROUP
         setupTask.get().description == "Prepares specific version of 'yarn' packager."
 
-        when:
-        def npmTask = project.getTasks().create("yarnVersion", PackagerTask.class)
-
-        then:
-        npmTask.group == NodePlugin.NODE_GROUP
-        npmTask.description == "Executes 'yarn' command."
-
     }
 
     def "ApplyDefault"() {
@@ -119,14 +102,20 @@ class PackagerInternalTest extends AbstractProjectTest {
         project.getExtensions().getExtraProperties().get("NpxTask") == DefaultPackagerCliTask.class
 
         when:
-        def npmTask = project.getTasks().create("npmVersion", DefaultPackagerTask.class)
-        def npxTask = project.getTasks().create("npxVersion", DefaultPackagerCliTask.class)
+        def defNpmTask = project.getTasks().create("npmVersion", DefaultPackagerTask.class)
+        def defNpxTask = project.getTasks().create("npxVersion", DefaultPackagerCliTask.class)
+        def npmTask = project.getTasks().create("npmHelp", PackagerTask.class)
+        def npxTask = project.getTasks().create("npxHelp", PackagerCliTask.class)
         def installTask = project.getTasks().getByName(NodePlugin.NODE_INSTALL_TASK_NAME)
 
         then:
+        defNpmTask.group == NodePlugin.NODE_GROUP
+        defNpxTask.group == NodePlugin.NODE_GROUP
         npmTask.group == NodePlugin.NODE_GROUP
         npxTask.group == NodePlugin.NODE_GROUP
         installTask.group == NodePlugin.NODE_GROUP
+        defNpmTask.description == "Executes 'npm' command."
+        defNpxTask.description == "Executes cli using 'npx' command."
         npmTask.description == "Executes 'npm' command."
         npxTask.description == "Executes cli using 'npx' command."
         installTask.description == NodePlugin.NODE_INSTALL_TASK_DESC
@@ -180,6 +169,8 @@ class PackagerInternalTest extends AbstractProjectTest {
 
         and:
         def setupTask = project.getTasks().named("npmSetup", PackagerSetupTask.class)
+        def npmTask = project.getTasks().create("npmVersion", PackagerTask.class)
+        def npxTask = project.getTasks().create("npxVersion", PackagerCliTask.class)
         def installTask = project.getTasks().getByName(NodePlugin.NODE_INSTALL_TASK_NAME)
 
         when:
@@ -187,6 +178,8 @@ class PackagerInternalTest extends AbstractProjectTest {
 
         then:
         setupTask.get().getDependsOn().toList() == [NodePlugin.NODE_SETUP_TASK_NAME]
+        npmTask.getDependsOn().toList() == ["npmSetup"]
+        npxTask.getDependsOn().toList() == ["npmSetup"]
         installTask.getDependsOn().toList() == ["npmSetup"]
 
     }
@@ -207,6 +200,8 @@ class PackagerInternalTest extends AbstractProjectTest {
 
         and:
         def setupTask = project.getTasks().named("yarnSetup", PackagerSetupTask.class)
+        def yarnTask = project.getTasks().create("yarnVersion", PackagerTask.class)
+        def cliTask = project.getTasks().create("unknown", PackagerCliTask.class)
         def installTask = project.getTasks().getByName(NodePlugin.NODE_INSTALL_TASK_NAME)
 
         when:
@@ -214,7 +209,9 @@ class PackagerInternalTest extends AbstractProjectTest {
 
         then:
         setupTask.get().getDependsOn().toList() == [NodePlugin.NODE_SETUP_TASK_NAME]
+        yarnTask.getDependsOn().toList() == ["yarnSetup"]
         installTask.getDependsOn().toList() == ["yarnSetup"]
+        cliTask.getDependsOn().isEmpty()
 
     }
 
@@ -253,20 +250,16 @@ class PackagerInternalTest extends AbstractProjectTest {
         packager.applyDefault(project)
 
         and:
-        def npmTask = project.getTasks().create("npmHelp", PackagerTask.class)
-        def npxTask = project.getTasks().create("npxHelp", PackagerCliTask.class)
-        def defNpmTask = project.getTasks().create("npmVersion", DefaultPackagerTask.class)
-        def defNpxTask = project.getTasks().create("npxVersion", DefaultPackagerCliTask.class)
+        def npmTask = project.getTasks().create("npmVersion", DefaultPackagerTask.class)
+        def npxTask = project.getTasks().create("npxVersion", DefaultPackagerCliTask.class)
         def installTask = project.getTasks().getByName(NodePlugin.NODE_INSTALL_TASK_NAME)
 
         when:
         packager.afterEvaluateDefault(project, nodeExtension)
 
         then:
-        npmTask.getDependsOn().toList() == ["npmSetup"]
-        npxTask.getDependsOn().toList() == ["npmSetup"]
-        defNpmTask.getDependsOn().toList() == [NodePlugin.NODE_SETUP_TASK_NAME]
-        defNpxTask.getDependsOn().toList() == [NodePlugin.NODE_SETUP_TASK_NAME]
+        npmTask.getDependsOn().toList() == [NodePlugin.NODE_SETUP_TASK_NAME]
+        npxTask.getDependsOn().toList() == [NodePlugin.NODE_SETUP_TASK_NAME]
         installTask.getDependsOn().toList() == [NodePlugin.NODE_SETUP_TASK_NAME]
 
     }
@@ -283,18 +276,14 @@ class PackagerInternalTest extends AbstractProjectTest {
         packager.applyDefault(project)
 
         and:
-        def yarnTask = project.getTasks().create("yarnHelp", PackagerTask.class)
-        def cliTask = project.getTasks().create("unknown", PackagerCliTask.class)
-        def defYarnTask = project.getTasks().create("yarnVersion", DefaultPackagerTask.class)
+        def yarnTask = project.getTasks().create("yarnVersion", DefaultPackagerTask.class)
         def installTask = project.getTasks().getByName(NodePlugin.NODE_INSTALL_TASK_NAME)
 
         when:
         packager.afterEvaluateDefault(project, nodeExtension)
 
         then:
-        yarnTask.getDependsOn().toList() == ["yarnSetup"]
-        cliTask.getDependsOn().isEmpty()
-        defYarnTask.getDependsOn().toList() == [NodePlugin.NODE_SETUP_TASK_NAME]
+        yarnTask.getDependsOn().toList() == [NodePlugin.NODE_SETUP_TASK_NAME]
         installTask.getDependsOn().toList() == [NodePlugin.NODE_SETUP_TASK_NAME]
 
     }

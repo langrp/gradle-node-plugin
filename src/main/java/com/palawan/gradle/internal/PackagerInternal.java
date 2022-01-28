@@ -28,7 +28,12 @@ package com.palawan.gradle.internal;
 import com.palawan.gradle.NodePlugin;
 import com.palawan.gradle.dsl.NodeExtension;
 import com.palawan.gradle.internal.data.PackagerData;
-import com.palawan.gradle.tasks.*;
+import com.palawan.gradle.tasks.DefaultPackagerCliTask;
+import com.palawan.gradle.tasks.DefaultPackagerTask;
+import com.palawan.gradle.tasks.NodeInstallTask;
+import com.palawan.gradle.tasks.PackagerCliTask;
+import com.palawan.gradle.tasks.PackagerSetupTask;
+import com.palawan.gradle.tasks.PackagerTask;
 import com.palawan.gradle.util.ValueHolder;
 import org.gradle.api.Project;
 
@@ -157,18 +162,10 @@ public class PackagerInternal extends AbstractExecutable {
 
 		String taskName = capitalize(name) + "Task";
 		project.getExtensions().getExtraProperties().set(taskName, PackagerTask.class);
-		project.getTasks().withType(PackagerTask.class, t -> {
-			t.setGroup(NodePlugin.NODE_GROUP);
-			t.setDescription("Executes '" + name + "' command.");
-		});
 
 		if (cli.get() != null) {
 			String cliName = capitalize(cli.get().getName()) + "Task";
 			project.getExtensions().getExtraProperties().set(cliName, PackagerCliTask.class);
-			project.getTasks().withType(PackagerCliTask.class, t -> {
-				t.setGroup(NodePlugin.NODE_GROUP);
-				t.setDescription("Executes cli using '" + cli.get().getName() + "' command.");
-			});
 		}
 
 	}
@@ -188,6 +185,11 @@ public class PackagerInternal extends AbstractExecutable {
 			t.setDescription("Executes '" + name + "' command.");
 		});
 
+		project.getTasks().withType(PackagerTask.class, t -> {
+			t.setGroup(NodePlugin.NODE_GROUP);
+			t.setDescription("Executes '" + name + "' command.");
+		});
+
 		project.getTasks().register(NodePlugin.NODE_INSTALL_TASK_NAME, NodeInstallTask.class, t -> {
 			t.setGroup(NodePlugin.NODE_GROUP);
 			t.setDescription(NodePlugin.NODE_INSTALL_TASK_DESC);
@@ -197,6 +199,11 @@ public class PackagerInternal extends AbstractExecutable {
 			String cliName = capitalize(cli.get().getName()) + "Task";
 			project.getExtensions().getExtraProperties().set(cliName, DefaultPackagerCliTask.class);
 			project.getTasks().withType(DefaultPackagerCliTask.class, t -> {
+				t.setGroup(NodePlugin.NODE_GROUP);
+				t.setDescription("Executes cli using '" + cli.get().getName() + "' command.");
+			});
+
+			project.getTasks().withType(PackagerCliTask.class, t -> {
 				t.setGroup(NodePlugin.NODE_GROUP);
 				t.setDescription("Executes cli using '" + cli.get().getName() + "' command.");
 			});
@@ -215,7 +222,12 @@ public class PackagerInternal extends AbstractExecutable {
 		getCli().ifPresent(c -> c.setPlatformSpecific(nodeExtension.getPlatformSpecific()));
 		if (nodeExtension.getDownload()) {
 			project.getTasks().withType(PackagerSetupTask.class, t -> t.dependsOn(NodePlugin.NODE_SETUP_TASK_NAME));
+			project.getTasks().withType(PackagerTask.class, t -> t.dependsOn(setupTaskName.get()));
 			project.getTasks().withType(NodeInstallTask.class, t -> t.dependsOn(setupTaskName.get()));
+
+			if (cli.get() != null) {
+				project.getTasks().withType(PackagerCliTask.class, t -> t.dependsOn(setupTaskName.get()));
+			}
 		}
 
 	}
@@ -230,12 +242,10 @@ public class PackagerInternal extends AbstractExecutable {
 		setPlatformSpecific(nodeExtension.getPlatformSpecific());
 		getCli().ifPresent(c -> c.setPlatformSpecific(nodeExtension.getPlatformSpecific()));
 		if (nodeExtension.getDownload()) {
-			project.getTasks().withType(PackagerTask.class, t -> t.dependsOn(setupTaskName.get()));
 			project.getTasks().withType(DefaultPackagerTask.class, t -> t.dependsOn(NodePlugin.NODE_SETUP_TASK_NAME));
 			project.getTasks().withType(NodeInstallTask.class, t -> t.dependsOn(NodePlugin.NODE_SETUP_TASK_NAME));
 
 			if (cli.get() != null) {
-				project.getTasks().withType(PackagerCliTask.class, t -> t.dependsOn(setupTaskName.get()));
 				project.getTasks().withType(DefaultPackagerCliTask.class, t -> t.dependsOn(NodePlugin.NODE_SETUP_TASK_NAME));
 			}
 		}

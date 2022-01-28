@@ -1,6 +1,11 @@
 Changelog
 =========
 
+Version 0.2.1
+--------------------------
+
+* Fix united package class dependencies
+
 Version 0.2 *(2022-01-27)*
 --------------------------
 

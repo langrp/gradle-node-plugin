@@ -38,7 +38,6 @@ import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.TaskAction;
 
 import java.io.File;
-import java.nio.file.Path;
 import java.util.Set;
 
 /**
@@ -71,7 +70,7 @@ public class NodeSetupTask extends DefaultTask {
 	}
 
 	@OutputDirectory
-	public Path getOutputDirectory() {
+	public File getOutputDirectory() {
 		return nodeExtension.get().getWorkingDir();
 	}
 

@@ -5,7 +5,7 @@ plugins {
 
 node {
 	download = true
-	setWorkingDir(rootProject.file(".gradle/nodejs"))
+	workingDir = rootProject.file(".gradle/nodejs")
 
 	custom {
 		command = "pnpm"

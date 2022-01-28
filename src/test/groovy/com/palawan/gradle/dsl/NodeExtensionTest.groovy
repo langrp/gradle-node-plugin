@@ -56,7 +56,7 @@ class NodeExtensionTest extends AbstractProjectTest {
         !node.getDownload()
         node.getCommand() == "node"
         node.getVersion() == NodePlugin.LTS_VERSION
-        isSameFile(node.getWorkingDir(), testProjectDir.resolve(".gradle/nodejs"))
+        isSameFile(node.getWorkingDir().toString(), testProjectDir.resolve(".gradle/nodejs"))
         node.getUrl() == "https://nodejs.org/dist"
 
     }
@@ -82,7 +82,7 @@ class NodeExtensionTest extends AbstractProjectTest {
         when:
         node.setWorkingDir(testProjectDir.resolve(".gradle/node").toFile())
         then:
-        node.getWorkingDir() == testProjectDir.resolve(".gradle/node")
+        node.getWorkingDir() == testProjectDir.resolve(".gradle/node").toFile()
 
         when:
         node.setUrl("https://company.org/dist")

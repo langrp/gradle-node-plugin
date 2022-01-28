@@ -2,7 +2,7 @@
 
 [![Build Status](https://github.com/langrp/gradle-node-plugin/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/langrp/gradle-node-plugin/actions/workflows/build.yml)
 [![License](https://img.shields.io/github/license/langrp/gradle-node-plugin.svg)](https://opensource.org/licenses/MIT)
-![Version](https://img.shields.io/badge/Version-0.2-orange.svg)
+![Version](https://img.shields.io/badge/Version-0.2.1-orange.svg)
 
 This plugin enables you to run build of your frontend using NodeJs technologies via gradle build system.
 The plugin supports multiple node-js packager managers:
@@ -14,7 +14,7 @@ The plugin supports multiple node-js packager managers:
 To start using the plugin add this into your `build.gradle` file.
 ```groovy
 plugins {
-    id "com.palawanframe.node" version "0.2"
+    id "com.palawanframe.node" version "0.2.1"
 }
 ```
 

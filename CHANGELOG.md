@@ -5,6 +5,7 @@ Version 0.2.1
 --------------------------
 
 * Fix united package class dependencies
+* Allow command line arguments to Node tasks
 
 Version 0.2 *(2022-01-27)*
 --------------------------

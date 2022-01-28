@@ -46,7 +46,7 @@ class DownloadNodeFuncTest extends AbstractFuncTest {
             }
             
             task nodeVersion(type: NodeTask) {
-                args = ["--version"]
+                arguments = ["--version"]
             }
             
             task npmVersion(type: NpmTask) {
@@ -81,7 +81,7 @@ class DownloadNodeFuncTest extends AbstractFuncTest {
             }
             
             task nodeVersion(type: NodeTask) {
-                args = ["--version"]
+                arguments = ["--version"]
             }
             
             task npmVersion(type: NpmTask) {

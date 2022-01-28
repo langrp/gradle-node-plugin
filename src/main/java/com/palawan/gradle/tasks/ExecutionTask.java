@@ -30,9 +30,11 @@ import com.palawan.gradle.internal.ExecutableData;
 import com.palawan.gradle.util.ValueHolder;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.TaskAction;
+import org.gradle.process.ExecResult;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -51,22 +53,24 @@ public abstract class ExecutionTask extends DefaultTask {
 	private Map<String, String> environment = Map.of();
 
 	@Nullable
-	private String workingDirPath;
+	private File workingDir;
 
 	@TaskAction
 	public void execute() {
-
 		ExecutableData executable = getExecutable()
-				.setWorkingDir(workingDirPath == null ? getProject().getProjectDir() : new File(workingDirPath))
+				.setWorkingDir(workingDir == null ? getProject().getProjectDir() : workingDir)
 				.setIgnoreExitValue(ignoreExitValue)
 				.addEnvironmentVariables(environment);
 
+		execute(executable);
+	}
+
+	protected ExecResult execute(ExecutableData executable) {
 		if (getNodeExtension().getDownload()) {
 			executable.withPathLocation(getNodeExtension().getNodeManager().getBinDir().toAbsolutePath().toString());
 		}
 
-		getProject().exec(executable);
-
+		return getProject().exec(executable);
 	}
 
 	@Internal
@@ -120,11 +124,11 @@ public abstract class ExecutionTask extends DefaultTask {
 	 *
 	 * @return workingDir
 	 */
-	@Input
+	@InputDirectory
 	@Optional
 	@Nullable
-	public String getWorkingDir() {
-		return workingDirPath;
+	public File getWorkingDir() {
+		return workingDir;
 	}
 
 	/**
@@ -132,7 +136,16 @@ public abstract class ExecutionTask extends DefaultTask {
 	 *
 	 * @param workingDir Set value of workingDir
 	 */
-	public void setWorkingDir(String workingDir) {
-		this.workingDirPath = workingDir;
+	public void setWorkingDir(File workingDir) {
+		this.workingDir = workingDir;
+	}
+
+	/**
+	 * Prefixes commend line argument name with '--'.
+	 * @param argument Argument name
+	 * @return Argument command line format
+	 */
+	protected String prefixArgument(String argument) {
+		return "--" + argument;
 	}
 }

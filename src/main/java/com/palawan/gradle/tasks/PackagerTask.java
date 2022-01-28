@@ -26,6 +26,7 @@
 package com.palawan.gradle.tasks;
 
 import com.palawan.gradle.internal.ExecutableData;
+import org.gradle.api.tasks.options.Option;
 
 import java.util.List;
 
@@ -40,4 +41,21 @@ public class PackagerTask extends CommandExecutionTask {
 		return packager.get().executableData(arguments);
 	}
 
+	@Option(
+			option = "cmd",
+			description = "Command to execute on packager."
+	)
+	@Override
+	public void setCommand(String command) {
+		super.setCommand(command);
+	}
+
+	@Option(
+			option = "args",
+			description = "Command arguments."
+	)
+	@Override
+	public void setArguments(List<String> arguments) {
+		super.setArguments(arguments);
+	}
 }

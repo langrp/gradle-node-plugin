@@ -11,16 +11,16 @@ node {
 task init(type: NpmTask) {
 	outputs.file("package.json")
 	command = "init"
-	args = ["-y"]
+	arguments = ["-y"]
 }
 
 nodeInstall {
 	dependsOn("init")
 	command = "install" // default value
-	args = ["express", "--save"]
+	arguments = ["express", "--save"]
 }
 
 task run(type: NodeTask) {
 	dependsOn("nodeInstall")
-	args = ["index.js"]
+	script = "index.js"
 }

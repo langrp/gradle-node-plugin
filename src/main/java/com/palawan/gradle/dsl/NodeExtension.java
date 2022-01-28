@@ -130,7 +130,7 @@ public class NodeExtension implements PackagerManager {
 	 * @return NodeJS base directory as {@link File}
 	 */
 	public File getWorkingDir() {
-		return nodeManager.getData().getWorkingDir().toFile();
+		return getWorkingDirPath().toFile();
 	}
 
 	/**
@@ -142,7 +142,15 @@ public class NodeExtension implements PackagerManager {
 	 * @param workingDir NodeJS base download location
 	 */
 	public void setWorkingDir(File workingDir) {
-		nodeManager.getData().setWorkingDir(workingDir.toPath());
+		setWorkingDirPath(workingDir.toPath());
+	}
+
+	public Path getWorkingDirPath() {
+		return nodeManager.getData().getWorkingDir();
+	}
+
+	public void setWorkingDirPath(Path workingDir) {
+		nodeManager.getData().setWorkingDir(workingDir);
 	}
 
 	/**

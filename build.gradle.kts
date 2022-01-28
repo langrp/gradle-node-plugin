@@ -94,6 +94,7 @@ tasks.withType<JacocoCoverageVerification> {
 }
 
 tasks.withType<Test> {
+	maxParallelForks = 4
 	useJUnitPlatform()
 	testLogging {
 		events = setOf(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)

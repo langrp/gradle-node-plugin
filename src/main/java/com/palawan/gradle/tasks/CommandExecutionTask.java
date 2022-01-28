@@ -29,9 +29,12 @@ import com.palawan.gradle.internal.ExecutableData;
 import com.palawan.gradle.internal.PackagerInternal;
 import com.palawan.gradle.util.ValueHolder;
 import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.Optional;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author petr.langr
@@ -44,14 +47,15 @@ abstract class CommandExecutionTask extends ExecutionTask {
 
 	private String command;
 
-	private List<String> args = List.of();
+	private List<String> arguments = List.of();
 
 	@Override
 	protected ExecutableData getExecutable() {
-		List<String> arguments = new ArrayList<>(args.size() + 1);
-		arguments.add(command);
-		arguments.addAll(args);
-		return executableData(arguments);
+		List<String> args = Stream.concat(Stream.of(command), arguments.stream())
+				.filter(Objects::nonNull)
+				.filter(s -> !s.isEmpty())
+				.collect(Collectors.toList());
+		return executableData(args);
 	}
 
 	protected abstract ExecutableData executableData(List<String> arguments);
@@ -62,6 +66,7 @@ abstract class CommandExecutionTask extends ExecutionTask {
 	 * @return command
 	 */
 	@Input
+	@Optional
 	public String getCommand() {
 		return command;
 	}
@@ -81,17 +86,17 @@ abstract class CommandExecutionTask extends ExecutionTask {
 	 * @return args
 	 */
 	@Input
-	public List<String> getArgs() {
-		return args;
+	public List<String> getArguments() {
+		return arguments;
 	}
 
 	/**
 	 * Set value for property args
 	 *
-	 * @param args Set value of args
+	 * @param arguments Set value of args
 	 */
-	public void setArgs(List<String> args) {
-		this.args = args;
+	public void setArguments(List<String> arguments) {
+		this.arguments = arguments;
 	}
 
 	private PackagerInternal getPackager() {

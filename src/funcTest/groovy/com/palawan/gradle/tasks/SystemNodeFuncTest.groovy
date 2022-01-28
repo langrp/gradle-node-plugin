@@ -103,11 +103,11 @@ class SystemNodeFuncTest extends AbstractFuncTest {
 			}
 			
 			task nodeHelp(type: NodeTask) {
-				args = ['--help']
+				arguments = ['--help']
 			}
 			
 			task helloWorld(type: NodeTask) {
-				args = [script]
+				arguments = [script]
 				outputs.upToDateWhen { true }
 			}
 			
@@ -186,12 +186,12 @@ class SystemNodeFuncTest extends AbstractFuncTest {
 
 			task failure(type: NodeTask) {
 				ignoreExitValue = true
-				args = ["unknown.js"]
+				arguments = ["unknown.js"]
 				outputs.upToDateWhen { true }
 			}
 			
 			task nodeHome(type: NodeTask) {
-				args = ["print-env.js"]
+				arguments = ["print-env.js"]
 				environment = ['NODE_HOME': nodeHomeVar]
 				outputs.upToDateWhen { true }
 			}
@@ -281,14 +281,14 @@ class SystemNodeFuncTest extends AbstractFuncTest {
 
 			task printSubProjectDir(type: NpmTask) {
 				command = "run"
-				args = ["print-cwd", "--prefix", "subproject"]
+				arguments = ["print-cwd", "--prefix", "subproject"]
 				inputs.file("subproject/print-cwd.js")
 				outputs.upToDateWhen { true }
 			}
 			
 			task printSubWorkingDir(type: NpmTask) {
 				command = "run"
-				args = ["print-cwd"]
+				arguments = ["print-cwd"]
 				workingDir = file("subproject")
 				inputs.file("subproject/print-cwd.js")
 				outputs.upToDateWhen { true }
@@ -296,21 +296,21 @@ class SystemNodeFuncTest extends AbstractFuncTest {
 			
 			task createCwd(type: NpmTask) {
 				command = "run"
-				args = ["create-cwd"]
+				arguments = ["create-cwd"]
 				inputs.file("create-cwd.js")
 				outputs.file("create-cwd.js")
 			}
 			
 			task printMainProjectDir(type: NpmTask) {
 				command = "run"
-				args = ["print-cwd"]
+				arguments = ["print-cwd"]
 				inputs.file("print-cwd.js")
 				outputs.upToDateWhen { true }
 			}
 			
 			task nodeTest(type: NpmTask) {
 				command = "run"
-				args = ["test"]
+				arguments = ["test"]
 			}
 
 		""")
@@ -384,7 +384,7 @@ class SystemNodeFuncTest extends AbstractFuncTest {
 			task nodeCompile(type: NpmTask) {
 				dependsOn(nodeInstall)
 				command = "run"
-				args = ["compile"]
+				arguments = ["compile"]
 				inputs.files(fileTree("src"))
 				outputs.dir("lib")
 			}
@@ -392,7 +392,7 @@ class SystemNodeFuncTest extends AbstractFuncTest {
 			task nodeTest(type: NpmTask) {
 				dependsOn(nodeCompile)
 				command = "run"
-				args = ["test"]
+				arguments = ["test"]
 				inputs.dir("lib")
 				outputs.files(fileTree("mochawesome-report"))
 			}
@@ -514,7 +514,7 @@ class SystemNodeFuncTest extends AbstractFuncTest {
 		
 			task cowsay(type: NpxTask) {
 				command = "cowsay"
-				args = ["Hello World"]
+				arguments = ["Hello World"]
 				outputs.upToDateWhen { true }
 			}
 		

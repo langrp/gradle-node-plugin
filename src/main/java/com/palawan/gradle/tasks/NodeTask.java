@@ -28,8 +28,14 @@ package com.palawan.gradle.tasks;
 import com.palawan.gradle.internal.ExecutableData;
 import com.palawan.gradle.internal.NodeManager;
 import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.Optional;
+import org.gradle.api.tasks.options.Option;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author petr.langr
@@ -37,30 +43,56 @@ import java.util.List;
  */
 public class NodeTask extends ExecutionTask {
 
-	private List<String> args;
+	private String script;
+	private List<String> options = new ArrayList<>(0);
+	private List<String> arguments = new ArrayList<>(0);
 
 	@Override
 	protected ExecutableData getExecutable() {
+		List<String> args = Stream.concat(Stream.concat(options.stream(), Stream.of(script)), arguments.stream())
+				.filter(Objects::nonNull)
+				.collect(Collectors.toList());
 		NodeManager nodeManager = getNodeExtension().getNodeManager();
 		return nodeManager.executableData(args);
 	}
 
-	/**
-	 * Get value of args
-	 *
-	 * @return args
-	 */
-	@Input
-	public List<String> getArgs() {
-		return args;
+	@Option(
+			option = "script",
+			description = "Define node script."
+	)
+	public void setScript(String script) {
+		this.script = script;
 	}
 
-	/**
-	 * Set value for property args
-	 *
-	 * @param args Set value of args
-	 */
-	public void setArgs(List<String> args) {
-		this.args = args;
+	@Input
+	@Optional
+	public String getScript() {
+		return script;
+	}
+
+	@Option(
+			option = "args",
+			description = "Define node script arguments."
+	)
+	public void setArguments(List<String> arguments) {
+		this.arguments = arguments;
+	}
+
+	@Input
+	public List<String> getArguments() {
+		return arguments;
+	}
+
+	@Option(
+			option = "opts",
+			description = "Define node options."
+	)
+	public void setOptions(List<String> options) {
+		this.options = options;
+	}
+
+	@Input
+	public List<String> getOptions() {
+		return options;
 	}
 }

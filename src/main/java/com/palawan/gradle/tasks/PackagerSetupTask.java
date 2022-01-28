@@ -67,12 +67,12 @@ public class PackagerSetupTask extends ExecutionTask {
 	@Nullable
 	@Override
 	@OutputDirectory
-	public String getWorkingDir() {
+	public File getWorkingDir() {
 		return getNodeExtension()
 				.getPackagerManager()
 				.getPackager()
 				.map(PackagerInternal::getWorkingDir)
-				.map(Path::toString)
+				.map(Path::toFile)
 				.orElse(null);
 	}
 

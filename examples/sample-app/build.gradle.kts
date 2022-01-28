@@ -20,22 +20,32 @@ node {
 	}
 }
 
-tasks.named<com.palawan.gradle.tasks.NodeInstallTask>("nodeInstall") {
-	command = "install"
-}
+/**
+ * execute node command as
+ * `./gradlew :node --script npm-cli.js`
+ */
+tasks.register<com.palawan.gradle.tasks.NodeTask>("node")
 
-tasks.register<com.palawan.gradle.tasks.NodeTask>("nodeVersion") {
-	args = listOf("--version")
-}
+/**
+ * execute npm command as
+ * `./gradlew :npm --cmd install --args="@angular/cli"`
+ */
+tasks.register<com.palawan.gradle.tasks.DefaultPackagerTask>("npm")
 
-tasks.register<com.palawan.gradle.tasks.DefaultPackagerTask>("npmVersion") {
-	command = "-version"
-}
+/**
+ * execute npx command as
+ * `./gradlew :npx --cmd cowsay --args="hello"`
+ */
+tasks.register<com.palawan.gradle.tasks.DefaultPackagerCliTask>("npx")
 
-tasks.register<com.palawan.gradle.tasks.DefaultPackagerCliTask>("npxVersion") {
-	command = "-version"
-}
+/**
+ * execute pnpm command as
+ * `./gradlew :pnpm --cmd install --args="@angular/cli"`
+ */
+tasks.register<com.palawan.gradle.tasks.PackagerTask>("pnpm")
 
-tasks.register<com.palawan.gradle.tasks.PackagerTask>("customVersion") {
-	command = "--version"
-}
+/**
+ * execute pnpx command as
+ * `./gradlew :pnpx --cmd cowsay --args="hello"`
+ */
+tasks.register<com.palawan.gradle.tasks.PackagerCliTask>("pnpx")

@@ -58,7 +58,7 @@ public abstract class ExecutionTask extends DefaultTask {
 	@TaskAction
 	public void execute() {
 		ExecutableData executable = getExecutable()
-				.setWorkingDir(workingDir == null ? getProject().getProjectDir() : workingDir)
+				.setWorkingDir(getWorkingDirOrProjectDir())
 				.setIgnoreExitValue(ignoreExitValue)
 				.addEnvironmentVariables(environment);
 
@@ -141,11 +141,11 @@ public abstract class ExecutionTask extends DefaultTask {
 	}
 
 	/**
-	 * Prefixes commend line argument name with '--'.
-	 * @param argument Argument name
-	 * @return Argument command line format
+	 * Gets either configured workingDir or project dir file.
+	 * @return Working dir
 	 */
-	protected String prefixArgument(String argument) {
-		return "--" + argument;
+	@Internal
+	protected File getWorkingDirOrProjectDir() {
+		return workingDir == null ? getProject().getProjectDir() : workingDir;
 	}
 }

@@ -31,6 +31,7 @@ import com.palawan.gradle.util.ValueHolder;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Optional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -47,7 +48,7 @@ abstract class CommandExecutionTask extends ExecutionTask {
 
 	private String command;
 
-	private List<String> arguments = List.of();
+	private List<String> arguments = new ArrayList<>(0);
 
 	@Override
 	protected ExecutableData getExecutable() {
@@ -97,6 +98,22 @@ abstract class CommandExecutionTask extends ExecutionTask {
 	 */
 	public void setArguments(List<String> arguments) {
 		this.arguments = arguments;
+	}
+
+	/**
+	 * Adds arguments into arguments list
+	 * @param arguments Arguments to be added
+	 */
+	public void addArguments(List<String> arguments) {
+		this.arguments.addAll(arguments);
+	}
+
+	/**
+	 * Adds argument into arguments list
+	 * @param argument Argument to be added
+	 */
+	public void addArgument(String argument) {
+		arguments.add(argument);
 	}
 
 	private PackagerInternal getPackager() {

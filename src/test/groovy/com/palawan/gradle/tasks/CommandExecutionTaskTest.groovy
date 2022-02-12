@@ -26,6 +26,7 @@
 package com.palawan.gradle.tasks
 
 import com.palawan.gradle.AbstractProjectTest
+import com.palawan.gradle.internal.ExecutableData
 import org.gradle.process.ExecSpec
 
 /**
@@ -33,42 +34,54 @@ import org.gradle.process.ExecSpec
  * @author petr.langr
  * @since 1.0.0
  */
-class PackagerTaskTest extends AbstractProjectTest {
+class CommandExecutionTaskTest extends AbstractProjectTest {
 
-    def "ExecutableData uses configured packager"() {
+	def "Allows adding argument"() {
+		given:
+		def task = project.tasks.create("packager", TestTask)
 
-        given:
-        ExecSpec spec = Mock()
-        def task = project.tasks.create("packager", PackagerTask)
-        nodeExtension.npm {  }
-        nodeExtension.getPackagerManager().getPackager().get().afterEvaluate(project, nodeExtension)
+		when:
+		task.addArgument("library")
 
-        when:
-        task.executableData(List.of("help")).execute(spec)
+		then:
+		task.arguments == ["library"]
+	}
 
-        then: "Would throw an NPE if package was not configured"
-        noExceptionThrown()
-        with(spec) {
-            1 * setArgs(["help"])
-        }
+	def "Allows adding arguments"() {
+		given:
+		def task = project.tasks.create("packager", TestTask)
 
-    }
+		when:
+		task.addArguments(["generate", "component"])
 
-    def "ExecutableData default packager"() {
+		then:
+		task.arguments == ["generate", "component"]
+	}
 
-        given:
-        ExecSpec spec = Mock()
-        def task = project.tasks.create("packager", PackagerTask)
-        nodeExtension.getNodeManager().getPackager().afterEvaluate(project, nodeExtension)
+	def "Filters empty arguments"() {
+		given:
+		ExecSpec spec = Mock()
+		def task = project.tasks.create("packager", TestTask)
+		nodeExtension.getNodeManager().getPackager().afterEvaluate(project, nodeExtension)
 
-        when:
-        task.executableData(List.of("help")).execute(spec)
+		and:
+		task.setCommand("")
+		task.addArguments(["generate", null, "", "component"])
 
-        then: "Would throw an NPE if package was not configured"
-        noExceptionThrown()
-        with(spec) {
-            1 * setArgs(["help"])
-        }
+		when:
+		task.getExecutable().execute(spec)
 
-    }
+		then:
+		with(spec) {
+			1 * setArgs(["generate", "component"])
+		}
+	}
+
+	static class TestTask extends CommandExecutionTask {
+
+		@Override
+		protected ExecutableData executableData(List<String> arguments) {
+			return new ExecutableData().setArgs(arguments)
+		}
+	}
 }

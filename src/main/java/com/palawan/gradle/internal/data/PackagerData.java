@@ -50,6 +50,7 @@ public class PackagerData implements CustomPackager {
 	private String npmPackage;
 	@Nullable
 	private String localScript;
+	private String addCommand;
 
 	@Nullable
 	private PackagerCliData cli;
@@ -81,6 +82,24 @@ public class PackagerData implements CustomPackager {
 	public PackagerData setCommand(String command) {
 		this.command = command;
 		return this;
+	}
+
+	/**
+	 * Sets packager add command name
+	 * @param addCommand add package command name
+	 * @return This package data
+	 */
+	public PackagerData setAddCommand(String addCommand) {
+		this.addCommand = addCommand;
+		return this;
+	}
+
+	/**
+	 * Gets packager add command name
+	 * @return Packager add command name
+	 */
+	public String getAddCommand() {
+		return addCommand;
 	}
 
 	/**

@@ -308,6 +308,26 @@ class PackagerInternalTest extends AbstractProjectTest {
 
     }
 
+    def "GetAddCommand"() {
+
+        given:
+        packager = PackagerInternal.npm()
+
+        when:
+        def command = packager.getAddCommand()
+
+        then:
+        command == "install"
+
+        when:
+        packager.getData().setAddCommand("add")
+        def command2 = packager.getAddCommand()
+
+        then:
+        command2 == "add"
+
+    }
+
     def "GetExecutableBinDir"() {
 
         given:

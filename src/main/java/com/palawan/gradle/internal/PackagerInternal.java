@@ -64,6 +64,7 @@ public class PackagerInternal extends AbstractExecutable {
 	private static PackagerData npmData() {
 		return new PackagerData()
 				.setCommand("npm")
+				.setAddCommand("install")
 				.setNpmPackage("npm")
 				.setLocalScript("bin/npm-cli.js")
 				.addInputFile("package.json")
@@ -79,6 +80,7 @@ public class PackagerInternal extends AbstractExecutable {
 	public static PackagerInternal pnpm() {
 		return new PackagerInternal("pnpm", "pnpx", new PackagerData()
 				.setCommand("pnpm")
+				.setAddCommand("install")
 				.setNpmPackage("pnpm")
 				.setLocalScript("bin/pnpm.js")
 				.addInputFile("package.json")
@@ -93,6 +95,7 @@ public class PackagerInternal extends AbstractExecutable {
 	public static PackagerInternal cnpm() {
 		return new PackagerInternal("cnpm", new PackagerData()
 				.setCommand("cnpm")
+				.setAddCommand("install")
 				.setNpmPackage("cnpm")
 				.addInputFile("package.json")
 				.addOutputDirectory("node_modules"));
@@ -101,6 +104,7 @@ public class PackagerInternal extends AbstractExecutable {
 	public static PackagerInternal yarn() {
 		return new PackagerInternal("yarn", new PackagerData()
 				.setCommand("yarn")
+				.setAddCommand("add")
 				.setNpmPackage("yarn")
 				.addInputFile("package.json")
 				.addInputFile("yarn.lock")
@@ -111,6 +115,7 @@ public class PackagerInternal extends AbstractExecutable {
 	public static PackagerInternal custom() {
 		return new PackagerInternal("custom", "customCli", new PackagerData()
 				.setCommand("custom")
+				.setAddCommand("install")
 				.setNpmPackage("custom"));
 	}
 
@@ -257,7 +262,7 @@ public class PackagerInternal extends AbstractExecutable {
 	}
 
 	@Override
-	protected Path getExecutableBinDir() {
+	public Path getExecutableBinDir() {
 		return getPlatformSpecific().getBinPath(workingDir.get());
 	}
 
@@ -278,6 +283,14 @@ public class PackagerInternal extends AbstractExecutable {
 	 */
 	PackagerData getData() {
 		return data;
+	}
+
+	/**
+	 * Packager command to add new dependency.
+	 * @return Add new dependency command
+	 */
+	public String getAddCommand() {
+		return data.getAddCommand();
 	}
 
 	public List<String> getInputFiles() {

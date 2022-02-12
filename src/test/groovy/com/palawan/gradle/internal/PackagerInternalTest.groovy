@@ -250,14 +250,18 @@ class PackagerInternalTest extends AbstractProjectTest {
         packager.applyDefault(project)
 
         and:
-        def npmTask = project.getTasks().create("npmVersion", DefaultPackagerTask.class)
-        def npxTask = project.getTasks().create("npxVersion", DefaultPackagerCliTask.class)
+        def defNpmTask = project.getTasks().create("npmVersion", DefaultPackagerTask.class)
+        def defNpxTask = project.getTasks().create("npxVersion", DefaultPackagerCliTask.class)
+        def npmTask = project.getTasks().create("npmHelp", PackagerTask.class)
+        def npxTask = project.getTasks().create("npxHelp", PackagerCliTask.class)
         def installTask = project.getTasks().getByName(NodePlugin.NODE_INSTALL_TASK_NAME)
 
         when:
         packager.afterEvaluateDefault(project, nodeExtension)
 
         then:
+        defNpmTask.getDependsOn().toList() == [NodePlugin.NODE_SETUP_TASK_NAME]
+        defNpxTask.getDependsOn().toList() == [NodePlugin.NODE_SETUP_TASK_NAME]
         npmTask.getDependsOn().toList() == [NodePlugin.NODE_SETUP_TASK_NAME]
         npxTask.getDependsOn().toList() == [NodePlugin.NODE_SETUP_TASK_NAME]
         installTask.getDependsOn().toList() == [NodePlugin.NODE_SETUP_TASK_NAME]

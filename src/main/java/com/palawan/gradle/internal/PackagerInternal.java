@@ -248,10 +248,12 @@ public class PackagerInternal extends AbstractExecutable {
 		getCli().ifPresent(c -> c.setPlatformSpecific(nodeExtension.getPlatformSpecific()));
 		if (nodeExtension.getDownload()) {
 			project.getTasks().withType(DefaultPackagerTask.class, t -> t.dependsOn(NodePlugin.NODE_SETUP_TASK_NAME));
+			project.getTasks().withType(PackagerTask.class, t -> t.dependsOn(NodePlugin.NODE_SETUP_TASK_NAME));
 			project.getTasks().withType(NodeInstallTask.class, t -> t.dependsOn(NodePlugin.NODE_SETUP_TASK_NAME));
 
 			if (cli.get() != null) {
 				project.getTasks().withType(DefaultPackagerCliTask.class, t -> t.dependsOn(NodePlugin.NODE_SETUP_TASK_NAME));
+				project.getTasks().withType(PackagerCliTask.class, t -> t.dependsOn(NodePlugin.NODE_SETUP_TASK_NAME));
 			}
 		}
 	}

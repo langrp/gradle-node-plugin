@@ -30,7 +30,6 @@ import com.palawan.gradle.internal.ExecutableData;
 import com.palawan.gradle.util.ValueHolder;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.TaskAction;
@@ -124,8 +123,7 @@ public abstract class ExecutionTask extends DefaultTask {
 	 *
 	 * @return workingDir
 	 */
-	@InputDirectory
-	@Optional
+	@Internal
 	@Nullable
 	public File getWorkingDir() {
 		return workingDir;
@@ -138,6 +136,17 @@ public abstract class ExecutionTask extends DefaultTask {
 	 */
 	public void setWorkingDir(File workingDir) {
 		this.workingDir = workingDir;
+	}
+
+	/**
+	 * Get path of working dir as input gradle task parameter
+	 * @return Working dir path
+	 */
+	@Input
+	@Optional
+	@Nullable
+	public String getWorkingDirString() {
+		return workingDir == null ? null : workingDir.getAbsolutePath();
 	}
 
 	/**
